@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import spacefiller.modes.KeystoneMode;
+import spacefiller.modes.NoOpMode;
+import spacefiller.modes.ScaleMode;
 import spacefiller.modes.SkewMode;
 import processing.core.*;
 import processing.data.XML;
@@ -56,6 +58,8 @@ public class Keystone {
 
     surfaces = new ArrayList<CornerPinSurface>();
 
+    setNoMode();
+
     // check the renderer type
     // issue a warning if we're not in 3D mode
     PGraphics pg = parent.g;
@@ -68,9 +72,16 @@ public class Keystone {
   }
 
   public void draw() {
-    System.out.println("HELLO");
     for (CornerPinSurface surface : surfaces) {
-      surface.render(isCalibrating());
+      if (isCalibrating() && surface.visible) {
+        surface.render(isCalibrating());
+      } else if (!isCalibrating()) {
+        surface.render(isCalibrating());
+      }
+    }
+
+    if (currentMode != null) {
+      currentMode.draw(parent.getGraphics());
     }
   }
 
@@ -87,13 +98,16 @@ public class Keystone {
   }
 
   public void setScaleMode() {
-    setMode(new SkewMode(this));
+    setMode(new ScaleMode(this));
   }
 
   public void setRotateMode() {
     setMode(new SkewMode(this));
   }
 
+  public void setNoMode() {
+    setMode(new NoOpMode(this));
+  }
 
   public void setMode(KeystoneMode mode) {
     this.currentMode = mode;

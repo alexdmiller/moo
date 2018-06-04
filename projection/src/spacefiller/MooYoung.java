@@ -13,7 +13,7 @@ public class MooYoung extends PApplet {
   }
 
 
-  private Keystone ks;
+  private Keystone keystone;
   private List<ShapeRenderer> shapeRenderers;
   private int visibleContour = 0;
   private float t;
@@ -24,28 +24,30 @@ public class MooYoung extends PApplet {
 
   public void setup() {
     shapeRenderers = new ArrayList<ShapeRenderer>();
-    ks = new Keystone(this);
+    keystone = new Keystone(this);
     PShape shape = loadShape("shoe-platform.svg");
     shape.scale(0.4f);
 
     int i = 0;
     for (PShape child : shape.getChildren()) {
       PGraphics canvas = createGraphics(700, 700, P3D);
-      CornerPinSurface surface = ks.createCornerPinSurface(canvas, 10);
+      CornerPinSurface surface = keystone.createCornerPinSurface(canvas, 10);
       ShapeRenderer renderer = new ShapeRenderer(child, surface, i);
       shapeRenderers.add(renderer);
       i++;
     }
+
+    visibleContour = 0;
+    shapeRenderers.get(visibleContour).surface.setVisible(true);
   }
 
   public void draw() {
     background(0);
 
-    if (!ks.isCalibrating()) {
+    if (!keystone.isCalibrating()) {
       t += 0.1f;
     } else {
-      fill(255);
-      ellipse(mouseX, mouseY, 20, 20);
+
     }
 
 
@@ -68,7 +70,7 @@ public class MooYoung extends PApplet {
     void draw() {
       shape.disableStyle();
       PGraphics graphics = surface.getCanvas();
-      if (ks.isCalibrating() && surface.visible) {
+      if (keystone.isCalibrating() && surface.visible) {
         graphics.beginDraw();
         graphics.clear();
         graphics.noFill();
@@ -76,7 +78,7 @@ public class MooYoung extends PApplet {
         graphics.strokeWeight(20);
         graphics.shape(this.shape);
         graphics.endDraw();
-      } else if (!ks.isCalibrating()) {
+      } else if (!keystone.isCalibrating()) {
         graphics.beginDraw();
         graphics.clear();
         graphics.stroke(255);
@@ -91,7 +93,12 @@ public class MooYoung extends PApplet {
   }
 
   public void keyPressed() {
-    if (key == ' ') {
+    if (key == 's') {
+      keystone.setSkewMode();
+    } else if (key == 'x') {
+      keystone.setScaleMode();
+    } else if (key == ' ') {
+      keystone.setNoMode();
     }
 
     if (keyCode == RIGHT) {

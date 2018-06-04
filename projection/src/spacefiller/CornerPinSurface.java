@@ -336,17 +336,38 @@ public class CornerPinSurface implements Draggable {
     controlPointColor = newColor;
   }
 
-  /**
-   * @invisible
-   */
   public Draggable select(float x, float y) {
-    // first, see if one of the control points are selected
-    x -= this.x;
-    y -= this.y;
-    for (int i = 0; i < mesh.length; i++) {
-      if (PApplet.dist(mesh[i].x, mesh[i].y, x, y) < 30
-          && mesh[i].isControlPoint())
-        return mesh[i];
+    return select(x, y, true);
+  }
+
+  public PVector getPosition() {
+    return new PVector(x, y);
+  }
+
+  public PVector getCenter() {
+    PVector center = new PVector();
+    for (MeshPoint point : mesh) {
+      center.x += point.x;
+      center.y += point.y;
+    }
+
+    center.div(mesh.length);
+    return center;
+  }
+
+    /**
+     * @invisible
+     */
+  public Draggable select(float x, float y, boolean controlPoints) {
+    if (controlPoints) {
+      // first, see if one of the control points are selected
+      x -= this.x;
+      y -= this.y;
+      for (int i = 0; i < mesh.length; i++) {
+        if (PApplet.dist(mesh[i].x, mesh[i].y, x, y) < 30
+            && mesh[i].isControlPoint())
+          return mesh[i];
+      }
     }
 
     // then, see if the surface itself is selected
@@ -455,6 +476,22 @@ public class CornerPinSurface implements Draggable {
   public void moveTo(float x, float y) {
     this.x = x - clickX;
     this.y = y - clickY;
+  }
+
+  public void translate(PVector o) {
+    for (MeshPoint p : mesh) {
+      p.x += o.x;
+      p.y += o.y;
+    }
+  }
+
+  public void scale(PVector o, float s) {
+    translate(o.mult(-1));
+    for (MeshPoint p : mesh) {
+      p.x *= s;
+      p.y *= s;
+    }
+    translate(o.mult(-1));
   }
 
   /**
