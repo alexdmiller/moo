@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="spacefillerlib">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../spacefillerlib/out/artifacts/spacefillerlib_jar/spacefillerlib.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

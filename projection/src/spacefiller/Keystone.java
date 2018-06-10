@@ -18,10 +18,7 @@ package spacefiller; /**
 import java.util.ArrayList;
 import java.util.List;
 
-import spacefiller.modes.KeystoneMode;
-import spacefiller.modes.NoOpMode;
-import spacefiller.modes.ScaleMode;
-import spacefiller.modes.SkewMode;
+import spacefiller.modes.*;
 import processing.core.*;
 import processing.data.XML;
 import processing.event.MouseEvent;
@@ -102,7 +99,7 @@ public class Keystone {
   }
 
   public void setRotateMode() {
-    setMode(new SkewMode(this));
+    setMode(new RotateMode(this));
   }
 
   public void setNoMode() {

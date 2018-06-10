@@ -455,7 +455,6 @@ public class CornerPinSurface implements Draggable {
   }
 
   private void calculateMeshOld() {
-
     for (int i = 0; i < mesh.length; i++) {
       int x = i % res;
       int y = i / res;
@@ -490,6 +489,17 @@ public class CornerPinSurface implements Draggable {
     for (MeshPoint p : mesh) {
       p.x *= s;
       p.y *= s;
+    }
+    translate(o.mult(-1));
+  }
+
+  public void rotate(PVector o, float r) {
+    translate(o.mult(-1));
+    for (MeshPoint p : mesh) {
+      float newX = (float) (p.x * Math.cos(r) - p.y * Math.sin(r));
+      float newY = (float) (p.x * Math.sin(r) + p.y * Math.cos(r));
+      p.x = newX;
+      p.y = newY;
     }
     translate(o.mult(-1));
   }
