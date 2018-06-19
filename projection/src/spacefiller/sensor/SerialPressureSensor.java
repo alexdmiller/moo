@@ -5,7 +5,7 @@ import processing.serial.Serial;
 
 import java.util.Arrays;
 
-public class SerialPressureSensor implements Sensor, Runnable {
+public class SerialPressureSensor extends Sensor implements Runnable {
   private Serial port;
   private boolean thresholdPassed;
 

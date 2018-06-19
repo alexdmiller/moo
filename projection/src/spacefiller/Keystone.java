@@ -69,13 +69,13 @@ public class Keystone {
   }
 
   public void draw() {
-    for (CornerPinSurface surface : surfaces) {
-      if (isCalibrating() && surface.visible) {
-        surface.render(isCalibrating());
-      } else if (!isCalibrating()) {
-        surface.render(isCalibrating());
-      }
-    }
+//    for (CornerPinSurface surface : surfaces) {
+//      if (isCalibrating() && surface.visible) {
+//        surface.render(isCalibrating());
+//      } else if (!isCalibrating()) {
+//        surface.render(isCalibrating());
+//      }
+//    }
 
     if (currentMode != null) {
       currentMode.draw(parent.getGraphics());

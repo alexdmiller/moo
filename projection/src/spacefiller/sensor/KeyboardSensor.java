@@ -5,7 +5,7 @@ import processing.event.KeyEvent;
 
 import static processing.core.PApplet.println;
 
-public class KeyboardSensor implements Sensor {
+public class KeyboardSensor extends Sensor {
   private PApplet parent;
   private char key;
   private boolean keyDepressed;

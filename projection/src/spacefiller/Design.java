@@ -1,11 +1,11 @@
 package spacefiller;
 
+import controlP5.ControlP5;
 import geomerative.RG;
 import geomerative.RShape;
 import spacefiller.particles.*;
 import processing.core.PApplet;
 import processing.core.PVector;
-import spacefiller.particles.behaviors.*;
 
 import java.util.*;
 import java.util.ArrayList;
@@ -19,13 +19,20 @@ public class Design extends PApplet {
   List<Circle> circles;
   Circle selected;
   ParticleSystem particles;
+  float circleRadius = 100;
+  float maxThreshold = 2;
+  float startThreshold = 0.2f;
+  float startStep = 0.02f;
+  float stepMultiplier = 1.5f;
+
+  ControlP5 cp5;
 
   public void settings() {
     fullScreen(P3D, 2);
   }
 
   public void setup() {
-    contourSpace = new ContourSpace(width, height, 100);
+    contourSpace = new ContourSpace(width, height, 15);
     circles = new ArrayList<>();
     RG.init(this);
 //    particles = new ParticleSystem(new Bounds(width, height), 100);
@@ -35,21 +42,46 @@ public class Design extends PApplet {
 //    particles.addBehavior(new RepelParticles(25,2));
 //    particles.addBehavior(new ParticleFriction(0.99f));
 //    particles.fillWithParticles(100, 2);
+
+    cp5 = new ControlP5(this);
+
+    cp5.addSlider("circleRadius")
+        .setPosition(20,20)
+        .setRange(0,255);
+
+    cp5.addSlider("maxThreshold")
+        .setPosition(100,20)
+        .setRange(1,5f);
+
+    cp5.addSlider("startThreshold")
+        .setPosition(20,40)
+        .setRange(0,1f);
+
+    cp5.addSlider("startStep")
+        .setPosition(100,40)
+        .setRange(0.0001f,0.1f);
+
+    cp5.addSlider("stepMultiplier")
+        .setPosition(20,60)
+        .setRange(1.01f,2f);
+
   }
 
   public void mousePressed() {
-    PVector mouse = new PVector(mouseX, mouseY);
-    for (Circle c : circles) {
-      float distance = mouse.dist(c.position);
-      if (distance < c.radius) {
-        selected = c;
-        break;
+    if (mouseY > 100) {
+      PVector mouse = new PVector(mouseX, mouseY);
+      for (Circle c : circles) {
+        float distance = mouse.dist(c.position);
+        if (distance < c.radius) {
+          selected = c;
+          break;
+        }
       }
-    }
 
-    if (selected == null) {
-      Circle circle = new Circle(mouse.copy(), 100);
-      circles.add(circle);
+      if (selected == null) {
+        Circle circle = new Circle(mouse.copy(), 100);
+        circles.add(circle);
+      }
     }
   }
 
@@ -67,7 +99,7 @@ public class Design extends PApplet {
   public void keyPressed() {
     RShape contours = new RShape();
 
-    VectorGroupBuilder builder = new VectorGroupBuilder(1);
+    VectorGroupBuilder builder = new VectorGroupBuilder(2);
     for (LineSegment segment : contourSpace.getLineSegments()) {
       builder.addGroup(new PVector[] { segment.p1, segment.p2 });
     }
@@ -93,27 +125,23 @@ public class Design extends PApplet {
   public void draw() {
     background(0);
 
-    float step = 0.01f;
-    float threshold = 0.2f;
+    float step = startStep;
+    float threshold = startThreshold;
 
 //    particles.update();
 
     contourSpace.resetGrid();
 
     for (Circle c : circles) {
-      contourSpace.addMetaBall(c.position, c.radius);
+      contourSpace.addMetaBall(c.position, circleRadius);
     }
-
-//    for (Particle p : particles.getParticles()) {
-//      contourSpace.addMetaBall(new PVector(p.position.x + width/2, p.position.y + height/2), 50);
-//    }
 
     contourSpace.clearLineSegments();
 
-    while (threshold < 2) {
+    while (threshold < maxThreshold) {
       contourSpace.drawIsoContour(threshold);
       threshold += step;
-      step *= 1.5;
+      step *= stepMultiplier;
     }
 
     stroke(255);

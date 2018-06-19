@@ -21,11 +21,10 @@ import java.awt.geom.Point2D;
 import javax.media.jai.PerspectiveTransform;
 import javax.media.jai.WarpPerspective;
 
-import processing.core.PApplet;
-import processing.core.PGraphics;
-import processing.core.PImage;
-import processing.core.PVector;
+import javafx.scene.shape.Mesh;
+import processing.core.*;
 import processing.data.XML;
+import processing.opengl.PShader;
 
 /**
  * A simple Corner Pin "keystoned" surface. The surface is a quad mesh that can
@@ -50,10 +49,10 @@ public class CornerPinSurface implements Draggable {
   int res;
 
   // Daniel Wiedeman: made them public static
-  public static int TL; // top left
-  public static int TR; // top right
-  public static int BL; // bottom left
-  public static int BR; // bottom right
+  public int TL; // top left
+  public int TR; // top right
+  public int BL; // bottom left
+  public int BR; // bottom right
 
   int gridColor;
   int controlPointColor;
@@ -131,6 +130,19 @@ public class CornerPinSurface implements Draggable {
     mesh[corner].moveTo(mesh[corner].x + moveX, mesh[corner].y + moveY);
   }
 
+  public void setMeshCorner(int corner, float x, float y) {
+    mesh[corner].moveTo(x, y);
+  }
+
+  public void setMeshCorner(int corner, MeshPoint point) {
+    mesh[corner].x = point.x;
+    mesh[corner].y = point.y;
+  }
+
+  public MeshPoint getCorner(int corner) {
+    return mesh[corner];
+  }
+
   /**
    * @return The surface's mesh resolution, in number of "tiles"
    */
@@ -138,6 +150,10 @@ public class CornerPinSurface implements Draggable {
     // The actual resolution is the number of tiles, not the number of mesh
     // points
     return res - 1;
+  }
+
+  public void render() {
+    render(false);
   }
 
   /**
@@ -189,6 +205,10 @@ public class CornerPinSurface implements Draggable {
     else
       g.noStroke();
     g.fill(255);
+
+//    g.image(texture, 0, 0);
+
+    g.textureMode(PConstants.IMAGE);
     g.beginShape(PApplet.QUADS);
     g.texture(texture);
     float u, v = 0;
@@ -214,11 +234,13 @@ public class CornerPinSurface implements Draggable {
       }
     }
     g.endShape(PApplet.CLOSE);
+    g.resetShader();
 
     if (showGrid)
       renderControlPoints(g);
 
     g.popMatrix();
+
   }
 
   /**
@@ -342,6 +364,11 @@ public class CornerPinSurface implements Draggable {
 
   public PVector getPosition() {
     return new PVector(x, y);
+  }
+
+  public void setPosition(PVector pos) {
+    x = pos.x;
+    y = pos.y;
   }
 
   public PVector getCenter() {
