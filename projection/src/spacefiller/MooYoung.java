@@ -12,6 +12,7 @@ import processing.serial.Serial;
 import spacefiller.particles.Bounds;
 import spacefiller.particles.Particle;
 import spacefiller.particles.ParticleSystem;
+import spacefiller.particles.behaviors.FatalBounds;
 import spacefiller.sensor.KeyboardSensor;
 import spacefiller.sensor.Sensor;
 import spacefiller.sensor.SerialPressureSensor;
@@ -100,6 +101,8 @@ public class MooYoung extends PApplet {
 
     system = new ParticleSystem(new Bounds(width, height), 100);
     system.fillWithParticles(100, 2);
+    system.createAreaSource(5, 2);
+    system.addBehavior(new FatalBounds());
   }
 
   public void draw() {
@@ -128,12 +131,12 @@ public class MooYoung extends PApplet {
       renderer.draw();
     }
 
-
     system.update();
     particleSurface.canvas.beginDraw();
+    particleSurface.canvas.translate(width / 2, height / 2);
     particleSurface.canvas.clear();
     particleSurface.canvas.stroke(255);
-    particleSurface.canvas.strokeWeight(10);
+    particleSurface.canvas.strokeWeight(2);
     for (Particle p : system.getParticles()) {
       particleSurface.canvas.point(p.position.x, p.position.y);
     }
@@ -174,7 +177,7 @@ public class MooYoung extends PApplet {
       } else if (!keystone.isCalibrating()) {
         graphics.beginDraw();
         graphics.clear();
-//
+
         graphics.noFill();
         graphics.stroke(255);
 
@@ -205,10 +208,11 @@ public class MooYoung extends PApplet {
             }
           }
 
-          TColor bright = TColor.RED.getRotatedRYB(i / 10f + t);
-          ReadonlyTColor idle = TColor.WHITE;
+//          TColor bright = TColor.RED.getRotatedRYB(i / 10f + t);
+//          ReadonlyTColor idle = TColor.WHITE;
 
-          graphics.stroke(bright.blend(idle, 1 - energy).toARGB());
+//          graphics.stroke(bright.blend(idle, 1 - energy).toARGB());
+          graphics.stroke(255);
           graphics.strokeWeight(energy * 10 + 1);
           graphics.vertex(p.x + totalDisplacement.x, p.y + totalDisplacement.y);
         }
