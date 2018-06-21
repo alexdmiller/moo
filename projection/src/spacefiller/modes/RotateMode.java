@@ -2,67 +2,48 @@ package spacefiller.modes;
 
 import processing.core.PGraphics;
 import processing.core.PVector;
+import processing.event.KeyEvent;
 import processing.event.MouseEvent;
 import spacefiller.CornerPinSurface;
 import spacefiller.Draggable;
-import spacefiller.Keystone;
+import spacefiller.Transformable;
 
-public class RotateMode extends KeystoneMode {
-  private CornerPinSurface target;
+public class RotateMode extends TransformerMode {
   private PVector lastMouse;
 
-  public RotateMode(Keystone keystone) {
-    super(keystone);
+  public RotateMode(Transformable target) {
+    super(target);
     lastMouse = new PVector();
   }
 
+  @Override
   public void draw(PGraphics graphics) {
     graphics.fill(255);
     if (target != null) {
       PVector center = target.getCenter();
-      center.add(target.getPosition());
       graphics.ellipse(center.x, center.y, 30, 30);
     }
   }
 
+  @Override
   public void mouseEvent(MouseEvent e) {
-    int x = e.getX();
-    int y = e.getY();
+    PVector mouse = new PVector(e.getX(), e.getY());
 
     switch (e.getAction()) {
       case MouseEvent.PRESS:
-        CornerPinSurface top = null;
-        // navigate the list backwards, as to select
-        for (int i = keystone.getSurfaces().size()-1; i >= 0; i--) {
-          CornerPinSurface s = keystone.getSurfaces().get(i);
-          if (s.isVisible()) {
-            Draggable draggable = s.select(x, y);
-            if (draggable != null) {
-              target = s;
-              break;
-            }
-          }
-        }
-        lastMouse.set(x, y);
+        lastMouse = mouse;
         break;
 
       case MouseEvent.DRAG:
         if (target != null) {
-          PVector currentMouse = new PVector(x, y);
-
           PVector center = target.getCenter();
-          center.add(target.getPosition());
 
           float initialAngle = (float) Math.atan2(center.y - lastMouse.y, center.x - lastMouse.x);
-          float currentAngle = (float) Math.atan2(center.y - currentMouse.y, center.x - currentMouse.x);
+          float currentAngle = (float) Math.atan2(center.y - mouse.y, center.x - mouse.x);
 
           target.rotate(target.getCenter(), currentAngle - initialAngle);
-          lastMouse = currentMouse;
+          lastMouse = mouse;
         }
-        break;
-
-      case MouseEvent.RELEASE:
-        target = null;
         break;
     }
   }

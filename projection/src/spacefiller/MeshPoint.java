@@ -20,7 +20,6 @@ package spacefiller; /**
  * texture coordinates.
  */
 public class MeshPoint implements Draggable {
-
 	public float x;
 	public float y;
 	public float u;

@@ -1,18 +1,8 @@
 package spacefiller.modes;
 
+import processing.core.PGraphics;
+import processing.event.KeyEvent;
 import processing.event.MouseEvent;
-import spacefiller.Keystone;
 
-public class NoOpMode extends KeystoneMode {
-  public NoOpMode(Keystone keystone) {
-    super(keystone);
-  }
-
-  @Override
-  public void mouseEvent(MouseEvent mouseEvent) {}
-
-  public boolean isCalibratingMode() {
-    return false;
-  }
-
+public class NoOpMode extends Mode {
 }

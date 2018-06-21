@@ -21,10 +21,8 @@ import java.awt.geom.Point2D;
 import javax.media.jai.PerspectiveTransform;
 import javax.media.jai.WarpPerspective;
 
-import javafx.scene.shape.Mesh;
 import processing.core.*;
 import processing.data.XML;
-import processing.opengl.PShader;
 
 /**
  * A simple Corner Pin "keystoned" surface. The surface is a quad mesh that can
@@ -34,19 +32,17 @@ import processing.opengl.PShader;
  *
  * March-2013 Added methods to programmatically move the corner points
  */
-public class CornerPinSurface implements Draggable {
+public class CornerPinSurface implements Draggable, Transformable {
+  private MeshPoint[] mesh;
 
-  PApplet parent;
-  PGraphics canvas;
+  protected float x;
+  protected float y;
+  private float clickX;
+  private float clickY;
 
-  MeshPoint[] mesh;
-
-  public float x;
-  public float y;
-  float clickX;
-  float clickY;
-
-  int res;
+  private int width;
+  private int height;
+  private int res;
 
   // Daniel Wiedeman: made them public static
   public int TL; // top left
@@ -62,29 +58,18 @@ public class CornerPinSurface implements Draggable {
   // Jai class for keystone calculus
   WarpPerspective warpPerspective = null;
 
-  /**
-   * @param parent
-   *            The parent applet -- used for default rendering mode
-   * @param res
-   *            The surface's grid resolution
-   */
-  CornerPinSurface(PApplet parent, PGraphics canvas, int res) {
-    this.canvas = canvas;
-    this.parent = parent;
-
+  CornerPinSurface(int width, int height, int res) {
     res++;
     this.res = res;
-
-
-    int w = canvas.width;
-    int h = canvas.height;
+    this.width = width;
+    this.height = height;
 
     // initialize the point array
     mesh = new MeshPoint[res * res];
     for (int i = 0; i < mesh.length; i++) {
       float x = (i % res) / (float) (res - 1);
       float y = (i / res) / (float) (res - 1);
-      mesh[i] = new MeshPoint(this, x * w, y * h, x * w, y * h);
+      mesh[i] = new MeshPoint(this, x * width, y * height, x * width, y * height);
     }
 
     // indices of the corner points
@@ -107,10 +92,6 @@ public class CornerPinSurface implements Draggable {
 
   public void setVisible(boolean value) {
     this.visible = value;
-  }
-
-  public PGraphics getCanvas() {
-    return canvas;
   }
 
   // ///////////////
@@ -152,40 +133,11 @@ public class CornerPinSurface implements Draggable {
     return res - 1;
   }
 
-  public void render() {
-    render(false);
-  }
-
-  /**
-   * Renders and applies keystoning to the image using the parent applet's
-   * renderer.
-   */
-  public void render(boolean showGrid) {
-    render(parent.g, canvas, showGrid);
-  }
-
-  /**
-   * Renders and applies keystoning to the image using the parent applet's
-   * renderer.
-   */
-  public void render(PImage texture, boolean showGrid) {
-    render(parent.g, texture, showGrid);
-  }
-
   /**
    * Renders and applies keystoning to the image using a specific renderer.
    */
   public void render(PGraphics g, PImage texture, boolean showGrid) {
     render(g, texture, 0, 0, texture.width, texture.height, showGrid);
-  }
-
-  /**
-   * Renders and applies keystoning to the image using the parent applet's
-   * renderer.The tX, tY, tW and tH parameters specify which section of the
-   * image to render onto this surface.
-   */
-  public void render(PImage texture, int tX, int tY, int tW, int tH, boolean showGrid) {
-    render(parent.g, texture, tX, tY, tW, tH, showGrid);
   }
 
   /**
@@ -195,8 +147,8 @@ public class CornerPinSurface implements Draggable {
    */
   public void render(PGraphics g, PImage texture, int tX, int tY, int tW,
                      int tH, boolean showGrid) {
-    int w = canvas.width;
-    int h = canvas.height;
+    int w = width;
+    int h = height;
 
     g.pushMatrix();
     g.translate(x, y);
@@ -256,75 +208,6 @@ public class CornerPinSurface implements Draggable {
     return new PVector((int) point.getX(), (int) point.getY());
   }
 
-  private PVector getTransformedMouseOld() {
-
-    // this was more of a pain than I tought!
-    // basically, we have to do an inverse billinear interpolation to figure
-    // out the relationship between
-    // the mouse in screen coordinates and the (s,t) position within a
-    // warped surface
-
-    // modified version of the algorithm found here:
-    // http://stackoverflow.com/questions/808441/inverse-bilinear-interpolation
-
-    // local mouse x and y -- remove translation offset
-    int lmx = parent.mouseX - (int) x;
-    int lmy = parent.mouseY - (int) y;
-
-    // these will make the following equations more clear
-    float x0 = mesh[BL].x;
-    float y0 = mesh[BL].y;
-
-    float x1 = mesh[BR].x;
-    float y1 = mesh[BR].y;
-
-    float x2 = mesh[TL].x;
-    float y2 = mesh[TL].y;
-
-    float x3 = mesh[TR].x;
-    float y3 = mesh[TR].y;
-
-    // terms of the algorithm
-    float a = cross2(x0 - lmx, y0 - lmy, x0 - x2, y0 - y2);
-    float b1 = cross2(x0 - lmx, y0 - lmy, x1 - x3, y1 - y3);
-    float b2 = cross2(x1 - lmx, y1 - lmy, x0 - x2, y0 - y2);
-    float c = cross2(x1 - lmx, y1 - lmy, x1 - x3, y1 - y3);
-    float b = 0.5f * (b1 + b2);
-
-    // what we are looking for. (s,t) coordinates for the input point (lmx,
-    // lmy)
-    float s, t;
-
-    float am2bpc = a - 2 * b + c;
-    if (am2bpc == 0) {
-      // this is the simple case, where the quad is linear (ie: not
-      // warped)
-      s = a / (a - c);
-    } else {
-      // this is the complicated case, where the quad is warped
-      float sqrtbsqmac = PApplet.sqrt(b * b - a * c);
-      s = ((a - b) + sqrtbsqmac) / am2bpc;
-    }
-
-    // now that we know s, calculate t
-    float tdenom_x = (1 - s) * (x0 - x2) + s * (x1 - x3);
-    float tdenom_y = (1 - s) * (y0 - y2) + s * (y1 - y3);
-    // choose the more robust denominator
-    if (PApplet.abs(tdenom_x) > PApplet.abs(tdenom_y)) {
-      t = 1 - ((1 - s) * (x0 - lmx) + s * (x1 - lmx)) / (tdenom_x);
-    } else {
-      t = 1 - ((1 - s) * (y0 - lmy) + s * (y1 - lmy)) / (tdenom_y);
-    }
-
-    int w = canvas.width;
-    int h = canvas.height;
-    return new PVector((int) (s * w), (int) (t * h));
-  }
-
-  public PVector getTransformedMouse() {
-    return getTransformedCursor(parent.mouseX, parent.mouseY);
-  }
-
   // 2d cross product
   private float cross2(float x0, float y0, float x1, float y1) {
     return x0 * y1 - y0 * x1;
@@ -358,10 +241,6 @@ public class CornerPinSurface implements Draggable {
     controlPointColor = newColor;
   }
 
-  public Draggable select(float x, float y) {
-    return select(x, y, true);
-  }
-
   public PVector getPosition() {
     return new PVector(x, y);
   }
@@ -379,28 +258,29 @@ public class CornerPinSurface implements Draggable {
     }
 
     center.div(mesh.length);
+    center.add(getPosition());
     return center;
   }
 
-    /**
-     * @invisible
-     */
-  public Draggable select(float x, float y, boolean controlPoints) {
+  public Draggable select(PVector point) {
+    return select(point, true);
+  }
+
+  public Draggable select(PVector point, boolean controlPoints) {
     if (controlPoints) {
       // first, see if one of the control points are selected
-      x -= this.x;
-      y -= this.y;
+      point.add(this.x, this.y);
       for (int i = 0; i < mesh.length; i++) {
-        if (PApplet.dist(mesh[i].x, mesh[i].y, x, y) < 30
+        if (PApplet.dist(mesh[i].x, mesh[i].y, point.x, point.y) < 30
             && mesh[i].isControlPoint())
           return mesh[i];
       }
     }
 
     // then, see if the surface itself is selected
-    if (isMouseOver()) {
-      clickX = x;
-      clickY = y;
+    if (isPointOver(point)) {
+      clickX = point.x;
+      clickY = point.y;
       return this;
     }
     return null;
@@ -409,10 +289,10 @@ public class CornerPinSurface implements Draggable {
   /**
    * Returns true if the mouse is over this surface, false otherwise.
    */
-  public boolean isMouseOver() {
-    if (isPointInTriangle(parent.mouseX - x, parent.mouseY - y, mesh[TL],
+  public boolean isPointOver(PVector point) {
+    if (isPointInTriangle(point.x - x, point.y - y, mesh[TL],
         mesh[TR], mesh[BL])
-        || isPointInTriangle(parent.mouseX - x, parent.mouseY - y,
+        || isPointInTriangle(point.x - x, point.y - y,
         mesh[BL], mesh[TR], mesh[BR]))
       return true;
     return false;
@@ -449,8 +329,8 @@ public class CornerPinSurface implements Draggable {
    * corners
    */
   protected void calculateMesh() {
-    int w = canvas.width;
-    int h = canvas.height;
+    int w = width;
+    int h = height;
     // The float constructor is deprecated, so casting everything to double
     PerspectiveTransform transform = PerspectiveTransform.getQuadToQuad(0,
         0, w, 0, w, h, 0,
@@ -504,31 +384,31 @@ public class CornerPinSurface implements Draggable {
     this.y = y - clickY;
   }
 
-  public void translate(PVector o) {
+  public void translate(PVector t) {
     for (MeshPoint p : mesh) {
-      p.x += o.x;
-      p.y += o.y;
+      p.x += t.x;
+      p.y += t.y;
     }
   }
 
-  public void scale(PVector o, float s) {
-    translate(o.mult(-1));
+  public void scale(PVector origin, float scale) {
+    translate(PVector.mult(origin, -1));
     for (MeshPoint p : mesh) {
-      p.x *= s;
-      p.y *= s;
+      p.x *= scale;
+      p.y *= scale;
     }
-    translate(o.mult(-1));
+    translate(origin);
   }
 
-  public void rotate(PVector o, float r) {
-    translate(o.mult(-1));
+  public void rotate(PVector origin, float theta) {
+    translate(PVector.mult(origin, -1));
     for (MeshPoint p : mesh) {
-      float newX = (float) (p.x * Math.cos(r) - p.y * Math.sin(r));
-      float newY = (float) (p.x * Math.sin(r) + p.y * Math.cos(r));
+      float newX = (float) (p.x * Math.cos(theta) - p.y * Math.sin(theta));
+      float newY = (float) (p.x * Math.sin(theta) + p.y * Math.cos(theta));
       p.x = newX;
       p.y = newY;
     }
-    translate(o.mult(-1));
+    translate(origin);
   }
 
   /**
