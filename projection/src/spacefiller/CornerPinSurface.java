@@ -267,13 +267,13 @@ public class CornerPinSurface implements Draggable, Transformable {
   }
 
   public Draggable select(PVector point, boolean controlPoints) {
-    point.x -= this.x;
-    point.y -= this.y;
+    float relativeX = point.x - this.x;
+    float relativeY = point.y - this.y;
 
     if (controlPoints) {
       // first, see if one of the control points are selected
       for (int i = 0; i < mesh.length; i++) {
-        if (PApplet.dist(mesh[i].x, mesh[i].y, point.x, point.y) < 30
+        if (PApplet.dist(mesh[i].x, mesh[i].y, relativeX, relativeY) < 30
             && mesh[i].isControlPoint())
           return mesh[i];
       }
@@ -281,8 +281,8 @@ public class CornerPinSurface implements Draggable, Transformable {
 
     // then, see if the surface itself is selected
     if (isPointOver(point)) {
-      clickX = point.x;
-      clickY = point.y;
+      clickX = relativeX;
+      clickY = relativeY;
       return this;
     }
     return null;

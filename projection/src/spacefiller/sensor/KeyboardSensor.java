@@ -22,7 +22,6 @@ public class KeyboardSensor extends Sensor {
     }
   }
 
-
   @Override
   public boolean isDepressed() {
     return keyDepressed;
