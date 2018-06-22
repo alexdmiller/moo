@@ -40,11 +40,8 @@ public class MooYoung2 extends PApplet {
     surface = new CornerPinSurface(width, height, 10);
     currentSelection = surface;
 
-    currentMode = new WarpMode(currentSelection);
-
     registerMethod("mouseEvent", this);
     registerMethod("keyEvent", this);
-
 
     RG.init(this);
     RG.setPolygonizer(RG.ADAPTATIVE);
@@ -68,6 +65,9 @@ public class MooYoung2 extends PApplet {
       sensor.setPosition(new PVector(epicenter.x, epicenter.y));
       sensors.add(sensor);
     }
+
+
+    currentMode = new WarpMode(new RShapeTransformer(shape.children[0]));
   }
 
   public void draw() {
