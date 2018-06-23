@@ -13,13 +13,15 @@ public class RShapeTransformer implements Transformable {
 
 
   @Override
-  public void scale(PVector origin, float scale) {
-    shape.scale(scale, origin.x, origin.y);
+  public void scale(float scale) {
+    RPoint center = shape.getCenter();
+    shape.scale(scale, center.x, center.y);
   }
 
   @Override
-  public void rotate(PVector origin, float theta) {
-    shape.rotate(theta, origin.x, origin.y);
+  public void rotate(float theta) {
+    RPoint center = shape.getCenter();
+    shape.rotate(theta, center.x, center.y);
   }
 
   @Override

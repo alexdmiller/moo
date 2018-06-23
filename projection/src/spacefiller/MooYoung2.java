@@ -58,24 +58,22 @@ public class MooYoung2 extends PApplet {
 
     transformables.addAll(shapes.stream().map(e -> new RShapeTransformer(e)).collect(Collectors.toList()));
 
-    RPoint epicenter = shapes.get(shapes.size() - 1).getCentroid();
 
     sensors = new ArrayList<>();
     try {
       println(Arrays.toString(Serial.list()));
       SerialConnection connection = new SerialConnection(new Serial(this, "/dev/tty.usbmodem1421", 9600), 2);
-
       sensors.add(connection.getSensor(0));
       sensors.add(connection.getSensor(1));
-
-//      Sensor sensor = new SerialPressureSensor(this);
-//      sensor.setPosition(new PVector(epicenter.x, epicenter.y));
-//      sensors.add(sensor);
     } catch (RuntimeException e) {
       System.out.println("Can't find serial connection. Resorting to keyboard control.");
       Sensor sensor = new KeyboardSensor(this, ' ');
-      sensor.setPosition(new PVector(epicenter.x, epicenter.y));
       sensors.add(sensor);
+    }
+
+    for (int i = 0; i < sensors.size(); i++) {
+      RPoint epicenter = shapes.get(shapes.size() - i - 1).getCentroid();
+      sensors.get(i).setPosition(epicenter.x, epicenter.y);
     }
 
     currentMode = new WarpMode(new RShapeTransformer(shape.children[0]));
@@ -90,31 +88,25 @@ public class MooYoung2 extends PApplet {
     canvas.noFill();
 
     if (currentMode != null) {
-      currentMode.draw(canvas);
+      currentMode.draw(this.getGraphics());
     }
 
     for (RShape shape : shapes) {
       shape.draw(canvas);
     }
+
+    canvas.stroke(255);
+    for (Sensor sensor : sensors) {
+      if (sensor.isDepressed()) {
+        canvas.fill(255, 0, 0);
+      } else {
+        canvas.fill(0);
+      }
+      canvas.ellipse(sensor.getPosition().x, sensor.getPosition().y, 50, 50);
+    }
     canvas.endDraw();
 
     surface.render(this.getGraphics(), canvas, true);
-
-
-    translate(20, 20);
-    stroke(255);
-
-    for (Sensor sensor : sensors) {
-      if (sensor.isDepressed()) {
-        fill(255, 0, 0);
-      } else {
-        fill(0);
-      }
-
-      ellipse(0, 0, 50, 50);
-      translate(0, 100);
-    }
-
   }
 
   public void mouseEvent(MouseEvent mouseEvent) {

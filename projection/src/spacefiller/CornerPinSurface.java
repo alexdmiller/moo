@@ -250,7 +250,7 @@ public class CornerPinSurface implements Draggable, Transformable {
     y = pos.y;
   }
 
-  public PVector getCenter() {
+  public PVector getRelativeCenter() {
     PVector center = new PVector();
     for (MeshPoint point : mesh) {
       center.x += point.x;
@@ -258,6 +258,11 @@ public class CornerPinSurface implements Draggable, Transformable {
     }
 
     center.div(mesh.length);
+    return center;
+  }
+
+  public PVector getCenter() {
+    PVector center = getRelativeCenter();
     center.add(getPosition());
     return center;
   }
@@ -393,16 +398,21 @@ public class CornerPinSurface implements Draggable, Transformable {
     }
   }
 
+  public void scale(float scale) {
+    scale(getRelativeCenter(), scale);
+  }
+
   public void scale(PVector origin, float scale) {
-    translate(PVector.mult(origin, -1));
+    translate(origin.mult(-1));
     for (MeshPoint p : mesh) {
       p.x *= scale;
       p.y *= scale;
     }
-    translate(origin);
+    translate(origin.mult(-1));
   }
 
-  public void rotate(PVector origin, float theta) {
+  public void rotate(float theta) {
+    PVector origin = getRelativeCenter();
     translate(PVector.mult(origin, -1));
     for (MeshPoint p : mesh) {
       float newX = (float) (p.x * Math.cos(theta) - p.y * Math.sin(theta));

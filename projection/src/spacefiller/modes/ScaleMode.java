@@ -3,8 +3,6 @@ package spacefiller.modes;
 import processing.core.PGraphics;
 import processing.core.PVector;
 import processing.event.MouseEvent;
-import spacefiller.CornerPinSurface;
-import spacefiller.Draggable;
 
 import spacefiller.Transformable;
 
@@ -42,7 +40,7 @@ public class ScaleMode extends TransformerMode {
           float currentDistance = center.dist(mouse);
 
           float scale = currentDistance / lastDistance;
-          target.scale(target.getCenter(), scale);
+          target.scale(scale);
 
           lastMouse = mouse;
         }

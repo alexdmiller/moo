@@ -41,7 +41,7 @@ public class RotateMode extends TransformerMode {
           float initialAngle = (float) Math.atan2(center.y - lastMouse.y, center.x - lastMouse.x);
           float currentAngle = (float) Math.atan2(center.y - mouse.y, center.x - mouse.x);
 
-          target.rotate(target.getCenter(), currentAngle - initialAngle);
+          target.rotate(currentAngle - initialAngle);
           lastMouse = mouse;
         }
         break;
