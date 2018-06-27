@@ -1,10 +1,15 @@
 package spacefiller.sensor;
 
+import de.looksgood.ani.Ani;
 import processing.core.PVector;
 
 public abstract class Sensor {
-  private boolean lastDepressedValue = false;
+  private boolean lastValue = false;
+  private boolean checkDownDirty = false;
+  private boolean checkUpDirty = false;
   private PVector position;
+
+  private float smoothedValue;
 
   public Sensor() {
     this.position = new PVector();
@@ -22,17 +27,32 @@ public abstract class Sensor {
     this.position.set(x, y);
   }
 
-  public abstract boolean isDepressed();
-
-  public boolean checkDepressed() {
-    if (!lastDepressedValue && isDepressed()) {
-      lastDepressedValue = true;
-      return true;
-    } else if (!isDepressed()) {
-      lastDepressedValue = false;
-    }
-    return false;
+  public boolean isDepressed() {
+    return lastValue;
   }
 
+  public boolean checkDown() {
+    boolean value = checkDownDirty && lastValue;
+    checkDownDirty = false;
+    return value;
+  }
 
+  public boolean checkUp() {
+    boolean value = checkUpDirty && !lastValue;
+    checkUpDirty = false;
+    return value;
+  }
+
+  public float getSmoothedValue() {
+    return smoothedValue;
+  }
+
+  protected void setSensorState(boolean down) {
+    if (lastValue != down) {
+      checkDownDirty = true;
+      checkUpDirty = true;
+      Ani.to(this, 2, "smoothedValue", down ? 0 : 1);
+    }
+    lastValue = down;
+  }
 }

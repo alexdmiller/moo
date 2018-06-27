@@ -6,12 +6,7 @@ import processing.serial.Serial;
 import java.util.Arrays;
 
 public class SerialPressureSensor extends Sensor {
-  private boolean thresholdPassed;
   private float sensitivity = 5;
-
-  public SerialPressureSensor() {
-
-  }
 
   public float getSensitivity() {
     return sensitivity;
@@ -22,11 +17,6 @@ public class SerialPressureSensor extends Sensor {
   }
 
   protected void setSensorValue(int value) {
-    thresholdPassed = value > sensitivity;
-  }
-
-  @Override
-  public boolean isDepressed() {
-    return thresholdPassed;
+    setSensorState(value > sensitivity);
   }
 }

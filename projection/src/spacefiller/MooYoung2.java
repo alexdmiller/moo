@@ -1,5 +1,6 @@
 package spacefiller;
 
+import de.looksgood.ani.Ani;
 import geomerative.RG;
 import geomerative.RPoint;
 import geomerative.RShape;
@@ -23,18 +24,17 @@ import java.util.stream.Collectors;
 
 public class MooYoung2 extends PApplet {
   private Mode currentMode;
-
   private CornerPinSurface surface;
   private PGraphics canvas;
   private List<RShape> shapes;
   private List<Sensor> sensors;
   private List<Ripple> ripples;
-
   private List<Transformable> transformables;
   private int selectedIndex = 1;
 
   public void settings() {
-    fullScreen(P3D, 1);
+    //fullScreen(P3D, 1);
+    size(1920, 1080, P3D);
   }
 
   public void setup() {
@@ -58,7 +58,6 @@ public class MooYoung2 extends PApplet {
 
     transformables.addAll(shapes.stream().map(e -> new RShapeTransformer(e)).collect(Collectors.toList()));
 
-
     sensors = new ArrayList<>();
     try {
       println(Arrays.toString(Serial.list()));
@@ -67,46 +66,29 @@ public class MooYoung2 extends PApplet {
       sensors.add(connection.getSensor(1));
     } catch (RuntimeException e) {
       System.out.println("Can't find serial connection. Resorting to keyboard control.");
-      Sensor sensor = new KeyboardSensor(this, ' ');
-      sensors.add(sensor);
+      sensors.add(new KeyboardSensor(this, 'm'));
+      sensors.add(new KeyboardSensor(this, 'n'));
     }
 
     for (int i = 0; i < sensors.size(); i++) {
       RPoint epicenter = shapes.get(shapes.size() - i - 1).getCentroid();
+      println(epicenter.x, epicenter.y);
       sensors.get(i).setPosition(epicenter.x, epicenter.y);
     }
 
-    currentMode = new WarpMode(new RShapeTransformer(shape.children[0]));
+    ripples = new ArrayList<>();
+
+    Ani.init(this);
+
+    currentMode = new WarpMode(this);
   }
 
   public void draw() {
     background(0);
 
-    canvas.beginDraw();
-    canvas.clear();
-    canvas.stroke(255);
-    canvas.noFill();
-
     if (currentMode != null) {
-      currentMode.draw(this.getGraphics());
+      currentMode.draw();
     }
-
-    for (RShape shape : shapes) {
-      shape.draw(canvas);
-    }
-
-    canvas.stroke(255);
-    for (Sensor sensor : sensors) {
-      if (sensor.isDepressed()) {
-        canvas.fill(255, 0, 0);
-      } else {
-        canvas.fill(0);
-      }
-      canvas.ellipse(sensor.getPosition().x, sensor.getPosition().y, 50, 50);
-    }
-    canvas.endDraw();
-
-    surface.render(this.getGraphics(), canvas, true);
   }
 
   public void mouseEvent(MouseEvent mouseEvent) {
@@ -115,48 +97,61 @@ public class MooYoung2 extends PApplet {
 
   public void keyEvent(KeyEvent keyEvent) {
     if (keyEvent.getAction() == KeyEvent.PRESS) {
-      if (keyEvent.getKey() == 'r') {
-        currentMode = new RotateMode(transformables.get(selectedIndex));
+      if (keyEvent.getKey() == 'e') {
+        currentMode = new WarpMode(this);
+      } else if (keyEvent.getKey() == 'r') {
+        currentMode = new RotateMode(this);
       } else if (keyEvent.getKey() == 's') {
-        currentMode = new ScaleMode(transformables.get(selectedIndex));
+        currentMode = new ScaleMode(this);
       } else if (keyEvent.getKeyCode() == RIGHT) {
         selectedIndex = Math.floorMod(selectedIndex + 1, transformables.size());
       } else if (keyEvent.getKeyCode() == LEFT) {
         selectedIndex = Math.floorMod(selectedIndex - 1, transformables.size());
       } else if (keyEvent.getKey() == 'b') {
         selectedIndex = 0;
+      } else if (keyEvent.getKey() == 'a') {
+        currentMode = new AnimateMode(this);
       }
-    } else if (keyEvent.getAction() == KeyEvent.RELEASE) {
-      currentMode = new WarpMode(transformables.get(selectedIndex));
+    } else if (keyEvent.getAction() == KeyEvent.RELEASE && currentMode.getClass() != AnimateMode.class) {
+      currentMode = new WarpMode(this);
     }
 
     currentMode.keyEvent(keyEvent);
   }
 
-  public void mousePressed() {
-
-  }
-
-  public void mouseReleased() {
-
-  }
-
-  public void keyPressed() {
-
-  }
-
-  public void keyReleased() {
-
-  }
-
-
   private void setMode(Mode nextMode) {
     currentMode = nextMode;
   }
 
+  public CornerPinSurface getCornerPinSurface() {
+    return surface;
+  }
 
+  public PGraphics getCanvas() {
+    return canvas;
+  }
+
+  public List<RShape> getShapes() {
+    return shapes;
+  }
+
+  public List<Sensor> getSensors() {
+    return sensors;
+  }
+
+  public List<Ripple> getRipples() {
+    return ripples;
+  }
+
+  public List<Transformable> getTransformables() {
+    return transformables;
+  }
 
   public static void main(String[] args) {
     PApplet.main("spacefiller.MooYoung2");
+  }
+
+  public Transformable getTransformTarget() {
+    return transformables.get(selectedIndex);
   }
 }

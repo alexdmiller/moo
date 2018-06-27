@@ -8,7 +8,6 @@ import static processing.core.PApplet.println;
 public class KeyboardSensor extends Sensor {
   private PApplet parent;
   private char key;
-  private boolean keyDepressed;
 
   public KeyboardSensor(PApplet parent, char key) {
     this.parent = parent;
@@ -17,13 +16,8 @@ public class KeyboardSensor extends Sensor {
   }
 
   public void keyEvent(KeyEvent event) {
-    if (event.getKeyCode() == 32) {
-      keyDepressed = event.getAction() == KeyEvent.PRESS;
+    if (event.getKey() == key) {
+      setSensorState(event.getAction() == KeyEvent.PRESS || event.getAction() == KeyEvent.TYPE);
     }
-  }
-
-  @Override
-  public boolean isDepressed() {
-    return keyDepressed;
   }
 }
