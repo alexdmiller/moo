@@ -30,7 +30,7 @@ public class AnimateMode extends Mode {
     List<Ripple> ripples = mooYoung.getRipples();
 
     for (Sensor sensor : mooYoung.getSensors()) {
-      if (sensor.checkDown()) {
+      if (sensor.checkUp()) {
         Ripple ripple = new Ripple(sensor.getPosition());
         ripples.add(ripple);
         Ani.to(ripple, 4f, "radius", mooYoung.width, Ani.QUAD_OUT);
@@ -77,6 +77,10 @@ public class AnimateMode extends Mode {
         for (Sensor sensor : mooYoung.getSensors()) {
           RPoint epicenter = new RPoint(sensor.getPosition().x, sensor.getPosition().y);
           energy += sensor.getSmoothedValue() * 100 / epicenter.dist(p);
+
+          if (sensor.getAssociatedShape() == shape) {
+            canvas.fill((1 - sensor.getSmoothedValue()) * 255);
+          }
         }
 
         TColor bright = TColor.RED.getRotatedRYB(i / 10f + mooYoung.frameCount / 100f);

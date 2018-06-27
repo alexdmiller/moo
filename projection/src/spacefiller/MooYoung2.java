@@ -58,6 +58,7 @@ public class MooYoung2 extends PApplet {
 
     transformables.addAll(shapes.stream().map(e -> new RShapeTransformer(e)).collect(Collectors.toList()));
 
+
     sensors = new ArrayList<>();
     try {
       println(Arrays.toString(Serial.list()));
@@ -70,11 +71,11 @@ public class MooYoung2 extends PApplet {
       sensors.add(new KeyboardSensor(this, 'n'));
     }
 
-    for (int i = 0; i < sensors.size(); i++) {
-      RPoint epicenter = shapes.get(shapes.size() - i - 1).getCentroid();
-      println(epicenter.x, epicenter.y);
-      sensors.get(i).setPosition(epicenter.x, epicenter.y);
-    }
+    RShape frontPlatform = shapes.get(shapes.size() - 1);
+    RShape backPlatform = shapes.get(shapes.size() - 2);
+
+    sensors.get(0).setAssociatedShape(frontPlatform);
+    sensors.get(1).setAssociatedShape(backPlatform);
 
     ripples = new ArrayList<>();
 

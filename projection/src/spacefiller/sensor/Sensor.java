@@ -1,6 +1,8 @@
 package spacefiller.sensor;
 
 import de.looksgood.ani.Ani;
+import geomerative.RPoint;
+import geomerative.RShape;
 import processing.core.PVector;
 
 public abstract class Sensor {
@@ -8,23 +10,21 @@ public abstract class Sensor {
   private boolean checkDownDirty = false;
   private boolean checkUpDirty = false;
   private PVector position;
-
+  private RShape associatedShape;
   private float smoothedValue;
 
-  public Sensor() {
-    this.position = new PVector();
+  public void setAssociatedShape(RShape associatedShape) {
+    this.associatedShape = associatedShape;
+    RPoint center = associatedShape.getCentroid();
+    this.position = new PVector(center.x, center.y);
+  }
+
+  public RShape getAssociatedShape() {
+    return associatedShape;
   }
 
   public PVector getPosition() {
     return position;
-  }
-
-  public void setPosition(PVector position) {
-    this.position = position;
-  }
-
-  public void setPosition(float x, float y) {
-    this.position.set(x, y);
   }
 
   public boolean isDepressed() {

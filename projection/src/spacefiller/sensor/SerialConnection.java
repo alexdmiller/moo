@@ -17,8 +17,7 @@ public class SerialConnection implements Runnable {
       this.sensors.add(new SerialPressureSensor());
     }
 
-
-   (new Thread(this)).start();
+    (new Thread(this)).start();
   }
 
   public SerialPressureSensor getSensor(int index) {
