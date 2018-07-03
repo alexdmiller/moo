@@ -22,6 +22,7 @@ public class RotateMode extends EditMode {
     PGraphics canvas = mooYoung.getCanvas();
     Transformable target = mooYoung.getTransformTarget();
 
+
     canvas.fill(255);
     if (target != null) {
       PVector center = target.getCenter();
@@ -33,6 +34,7 @@ public class RotateMode extends EditMode {
   public void mouseEvent(MouseEvent e) {
     PVector mouse = new PVector(e.getX(), e.getY());
     Transformable target = mooYoung.getTransformTarget();
+    mouse = target.getRelativePoint(mouse);
 
     switch (e.getAction()) {
       case MouseEvent.PRESS:

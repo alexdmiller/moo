@@ -1,5 +1,6 @@
 package spacefiller.modes;
 
+import processing.core.PGraphics;
 import processing.core.PVector;
 import processing.event.MouseEvent;
 import spacefiller.CornerPinSurface;
@@ -19,6 +20,8 @@ public class WarpMode extends EditMode {
     PVector mouse = new PVector(e.getX(), e.getY());
     Transformable target = mooYoung.getTransformTarget();
 
+    mouse = target.getRelativePoint(mouse);
+
     switch (e.getAction()) {
       case MouseEvent.PRESS:
         dragged = target.select(mouse);
@@ -33,5 +36,10 @@ public class WarpMode extends EditMode {
         dragged = null;
         break;
     }
+  }
+
+  @Override
+  protected void drawEditingUI() {
+    mooYoung.getTransformTarget().renderControlPoints(mooYoung.getGraphics(), mooYoung.getCanvas());
   }
 }

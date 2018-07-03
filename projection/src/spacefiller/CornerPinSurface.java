@@ -188,9 +188,6 @@ public class CornerPinSurface implements Draggable, Transformable {
     g.endShape(PApplet.CLOSE);
     g.resetShader();
 
-    if (showGrid)
-      renderControlPoints(g);
-
     g.popMatrix();
 
   }
@@ -208,6 +205,12 @@ public class CornerPinSurface implements Draggable, Transformable {
     return new PVector((int) point.getX(), (int) point.getY());
   }
 
+  public PVector getTransformedCursor(float cx, float cy) {
+    Point2D point = warpPerspective.mapSourcePoint(new Point((int) cx - (int) x,
+        (int) cy - (int) y));
+    return new PVector((int) point.getX(), (int) point.getY());
+  }
+
   // 2d cross product
   private float cross2(float x0, float y0, float x1, float y1) {
     return x0 * y1 - y0 * x1;
@@ -216,7 +219,9 @@ public class CornerPinSurface implements Draggable, Transformable {
   /**
    * Draws targets around the control points
    */
-  private void renderControlPoints(PGraphics g) {
+  public void renderControlPoints(PGraphics g, PGraphics canvas) {
+    g.pushMatrix();
+    g.translate(x, y);
     g.stroke(controlPointColor);
     g.fill(255);
     for (int i = 0; i < mesh.length; i++) {
@@ -225,6 +230,7 @@ public class CornerPinSurface implements Draggable, Transformable {
         g.ellipse(mesh[i].x, mesh[i].y, 10, 10);
       }
     }
+    g.popMatrix();
   }
 
   /**
@@ -265,6 +271,11 @@ public class CornerPinSurface implements Draggable, Transformable {
     PVector center = getRelativeCenter();
     center.add(getPosition());
     return center;
+  }
+
+  @Override
+  public PVector getRelativePoint(PVector point) {
+    return point;
   }
 
   public Draggable select(PVector point) {

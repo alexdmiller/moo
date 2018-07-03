@@ -19,7 +19,7 @@ public class EditMode extends Mode {
     canvas.beginDraw();
     canvas.clear();
     canvas.stroke(255);
-    canvas.strokeWeight(1);
+    canvas.strokeWeight(3);
     canvas.noFill();
 
     for (RShape shape : mooYoung.getShapes()) {
@@ -35,9 +35,10 @@ public class EditMode extends Mode {
       }
       canvas.ellipse(sensor.getPosition().x, sensor.getPosition().y, 50, 50);
     }
-    canvas.endDraw();
 
     drawEditingUI();
+
+    canvas.endDraw();
 
     mooYoung.getCornerPinSurface().render(graphics, canvas, true);
   }

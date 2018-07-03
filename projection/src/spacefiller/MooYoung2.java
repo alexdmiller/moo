@@ -33,8 +33,8 @@ public class MooYoung2 extends PApplet {
   private int selectedIndex = 1;
 
   public void settings() {
-    //fullScreen(P3D, 1);
-    size(1920, 1080, P3D);
+    fullScreen(P3D, 1);
+    //size(1920, 1080, P3D);
   }
 
   public void setup() {
@@ -56,8 +56,7 @@ public class MooYoung2 extends PApplet {
     Collections.sort(shapes, new ShapeComparator());
     shape.scale(1);
 
-    transformables.addAll(shapes.stream().map(e -> new RShapeTransformer(e)).collect(Collectors.toList()));
-
+    transformables.addAll(shapes.stream().map(e -> new RShapeTransformer(e, surface)).collect(Collectors.toList()));
 
     sensors = new ArrayList<>();
     try {
