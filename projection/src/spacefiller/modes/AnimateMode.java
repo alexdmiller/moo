@@ -3,12 +3,10 @@ package spacefiller.modes;
 import de.looksgood.ani.Ani;
 import geomerative.RPoint;
 import geomerative.RShape;
-import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PGraphics;
 import processing.core.PVector;
-import spacefiller.CornerPinSurface;
-import spacefiller.MooYoung2;
+import spacefiller.MooYoung;
 import spacefiller.Ripple;
 import spacefiller.sensor.Sensor;
 import toxi.color.ReadonlyTColor;
@@ -21,7 +19,7 @@ public class AnimateMode extends Mode {
   private static final float MAX_RIPPLE_STRENGTH = 30;
   private static final float LINE_PULSE = 20;
 
-  public AnimateMode(MooYoung2 mooYoung) {
+  public AnimateMode(MooYoung mooYoung) {
     super(mooYoung);
   }
 

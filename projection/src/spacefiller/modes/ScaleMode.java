@@ -4,14 +4,13 @@ import processing.core.PGraphics;
 import processing.core.PVector;
 import processing.event.MouseEvent;
 
-import spacefiller.CornerPinSurface;
-import spacefiller.MooYoung2;
+import spacefiller.MooYoung;
 import spacefiller.Transformable;
 
 public class ScaleMode extends EditMode {
   private PVector lastMouse;
 
-  public ScaleMode(MooYoung2 mooYoung) {
+  public ScaleMode(MooYoung mooYoung) {
     super(mooYoung);
     lastMouse = new PVector();
   }

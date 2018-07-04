@@ -2,17 +2,14 @@ package spacefiller.modes;
 
 import processing.core.PGraphics;
 import processing.core.PVector;
-import processing.event.KeyEvent;
 import processing.event.MouseEvent;
-import spacefiller.CornerPinSurface;
-import spacefiller.Draggable;
-import spacefiller.MooYoung2;
+import spacefiller.MooYoung;
 import spacefiller.Transformable;
 
 public class RotateMode extends EditMode {
   private PVector lastMouse;
 
-  public RotateMode(MooYoung2 mooYoung) {
+  public RotateMode(MooYoung mooYoung) {
     super(mooYoung);
     lastMouse = new PVector();
   }

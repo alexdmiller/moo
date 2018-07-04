@@ -2,12 +2,11 @@ package spacefiller.modes;
 
 import geomerative.RShape;
 import processing.core.PGraphics;
-import spacefiller.MooYoung2;
-import spacefiller.Transformable;
+import spacefiller.MooYoung;
 import spacefiller.sensor.Sensor;
 
 public class EditMode extends Mode {
-  public EditMode(MooYoung2 mooYoung) {
+  public EditMode(MooYoung mooYoung) {
     super(mooYoung);
   }
 

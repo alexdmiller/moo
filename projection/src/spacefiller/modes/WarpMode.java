@@ -1,17 +1,15 @@
 package spacefiller.modes;
 
-import processing.core.PGraphics;
 import processing.core.PVector;
 import processing.event.MouseEvent;
-import spacefiller.CornerPinSurface;
 import spacefiller.Draggable;
-import spacefiller.MooYoung2;
+import spacefiller.MooYoung;
 import spacefiller.Transformable;
 
 public class WarpMode extends EditMode {
   private Draggable dragged;
 
-  public WarpMode(MooYoung2 mooYoung) {
+  public WarpMode(MooYoung mooYoung) {
     super(mooYoung);
   }
 

@@ -1,15 +1,13 @@
 package spacefiller.modes;
 
-import processing.core.PGraphics;
 import processing.event.KeyEvent;
 import processing.event.MouseEvent;
-import spacefiller.CornerPinSurface;
-import spacefiller.MooYoung2;
+import spacefiller.MooYoung;
 
 public class Mode {
-  protected MooYoung2 mooYoung;
+  protected MooYoung mooYoung;
 
-  public Mode(MooYoung2 mooYoung) {
+  public Mode(MooYoung mooYoung) {
     this.mooYoung = mooYoung;
   }
 
