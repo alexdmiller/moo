@@ -1,5 +1,10 @@
+out
+
+projection/.idea
+projection/.idea/libraries/Ani.xml
 projection/.idea/libraries/*
 projection/.idea/libraries
+
 
 
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and WebStorm
