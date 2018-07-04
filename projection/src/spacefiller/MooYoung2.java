@@ -62,8 +62,15 @@ public class MooYoung2 extends PApplet {
     try {
       println(Arrays.toString(Serial.list()));
       SerialConnection connection = new SerialConnection(new Serial(this, "/dev/tty.usbmodem1421", 9600), 2);
-      sensors.add(connection.getSensor(0));
-      sensors.add(connection.getSensor(1));
+
+      SerialPressureSensor sensor1 = connection.getSensor(0);
+      SerialPressureSensor sensor2 = connection.getSensor(1);
+
+      sensor1.setSensitivity(4f);
+      sensor2.setSensitivity(4f);
+
+      sensors.add(sensor1);
+      sensors.add(sensor2);
     } catch (RuntimeException e) {
       System.out.println("Can't find serial connection. Resorting to keyboard control.");
       sensors.add(new KeyboardSensor(this, 'm'));
