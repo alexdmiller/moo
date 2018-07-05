@@ -15,11 +15,13 @@ package spacefiller; /**
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.io.Serializable;
+
 /**
  * Represents a single point in the mesh, along with its precomputed (u,v)
  * texture coordinates.
  */
-public class MeshPoint implements Draggable {
+public class MeshPoint implements Draggable, Serializable {
 	public float x;
 	public float y;
 	public float u;
@@ -48,6 +50,11 @@ public class MeshPoint implements Draggable {
 		this.y = y - parent.y;
 		//parent.calculateMesh(this.id);
 		parent.calculateMesh();
+	}
+
+	public void setPosition(float x, float y) {
+		this.x = x;
+		this.y = y;
 	}
 
 	protected void setControlPoint(boolean cp) {

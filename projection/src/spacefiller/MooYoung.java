@@ -16,10 +16,8 @@ import spacefiller.sensor.Sensor;
 import spacefiller.sensor.SerialConnection;
 import spacefiller.sensor.SerialPressureSensor;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MooYoung extends PApplet {
@@ -54,7 +52,9 @@ public class MooYoung extends PApplet {
     RShape shape = RG.loadShape(System.getProperty("user.dir") + "/contours.svg");
     shapes = Arrays.asList(shape.children);
     Collections.sort(shapes, new ShapeComparator());
-    shape.scale(1);
+    shape.scale(0.99f);
+    shape.translate(-shape.getTopLeft().x, -shape.getTopLeft().y);
+    shape.translate(width / 2 - shape.getWidth() / 2, height / 2 - shape.getHeight() / 2);
 
     transformables.addAll(shapes.stream().map(e -> new RShapeTransformer(e, surface)).collect(Collectors.toList()));
 
@@ -88,6 +88,52 @@ public class MooYoung extends PApplet {
     Ani.init(this);
 
     currentMode = new WarpMode(this);
+
+    try {
+      load();
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    }
+
+  }
+
+  @Override
+  public void exit() {
+    try {
+      FileWriter fileWriter = new FileWriter("warp-points.csv");
+      PrintWriter printWriter = new PrintWriter(fileWriter);
+
+      for (Transformable transformable : transformables) {
+        List<PVector> points = Arrays.asList(transformable.getControlPoints());
+        List<String> pointStrings = points.stream().map(p -> p.x + "\t" + p.y).collect(Collectors.toList());
+        printWriter.println(String.join("\t", pointStrings));
+      }
+
+      printWriter.close();
+    } catch(IOException ex) {
+      ex.printStackTrace();
+    }
+
+    super.exit();
+  }
+
+  public void load() throws FileNotFoundException {
+    File file = new File("warp-points.csv");
+    Scanner scanner = new Scanner(file);
+
+    for (int i = 0; i < transformables.size(); i++) {
+      String line = scanner.nextLine();
+      Scanner lineScan = new Scanner(line);
+
+      PVector[] controlPoints = new PVector[4];
+      for (int j = 0; j < 4; j++) {
+        float x = lineScan.nextFloat();
+        float y = lineScan.nextFloat();
+        controlPoints[j] = new PVector(x, y);
+      }
+
+      transformables.get(i).setControlPoints(controlPoints);
+    }
   }
 
   public void draw() {

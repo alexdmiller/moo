@@ -10,4 +10,7 @@ public interface Transformable {
   PVector getCenter();
   PVector getRelativePoint(PVector point);
   void renderControlPoints(PGraphics graphics, PGraphics canvas);
+
+  PVector[] getControlPoints();
+  void setControlPoints(PVector[] points);
 }
