@@ -26,7 +26,6 @@ public class MooYoung extends PApplet {
   private PGraphics canvas;
   private List<RShape> shapes;
   private List<Sensor> sensors;
-  private List<Ripple> ripples;
   private List<Transformable> transformables;
   private int selectedIndex = 1;
 
@@ -83,7 +82,6 @@ public class MooYoung extends PApplet {
     sensors.get(0).setAssociatedShape(frontPlatform);
     sensors.get(1).setAssociatedShape(backPlatform);
 
-    ripples = new ArrayList<>();
 
     Ani.init(this);
 
@@ -98,7 +96,7 @@ public class MooYoung extends PApplet {
   }
 
   @Override
-  public void exit() {
+  public void mouseReleased() {
     try {
       FileWriter fileWriter = new FileWriter("warp-points.csv");
       PrintWriter printWriter = new PrintWriter(fileWriter);
@@ -110,11 +108,10 @@ public class MooYoung extends PApplet {
       }
 
       printWriter.close();
+      fileWriter.close();
     } catch(IOException ex) {
       ex.printStackTrace();
     }
-
-    super.exit();
   }
 
   public void load() throws FileNotFoundException {
@@ -192,19 +189,16 @@ public class MooYoung extends PApplet {
     return sensors;
   }
 
-  public List<Ripple> getRipples() {
-    return ripples;
-  }
-
   public List<Transformable> getTransformables() {
     return transformables;
+  }
+
+  public Transformable getTransformTarget() {
+    return transformables.get(selectedIndex);
   }
 
   public static void main(String[] args) {
     PApplet.main("spacefiller.MooYoung");
   }
 
-  public Transformable getTransformTarget() {
-    return transformables.get(selectedIndex);
-  }
 }

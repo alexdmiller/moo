@@ -7,25 +7,63 @@ import processing.core.PConstants;
 import processing.core.PGraphics;
 import processing.core.PVector;
 import spacefiller.MooYoung;
+import spacefiller.RShapePin;
 import spacefiller.Ripple;
+import spacefiller.particles.Bounds;
+import spacefiller.particles.Particle;
+import spacefiller.particles.ParticleSystem;
+import spacefiller.particles.behaviors.*;
 import spacefiller.sensor.Sensor;
 import toxi.color.ReadonlyTColor;
 import toxi.color.TColor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AnimateMode extends Mode {
   private static final float RIPPLE_SPEED = 20;
   private static final float MAX_RIPPLE_STRENGTH = 30;
   private static final float LINE_PULSE = 20;
+  private List<Ripple> ripples;
+  private ParticleSystem particles;
+  private RepelFixedPoints repelFixedPoints;
+
+  private List<RepelFixedPoints> sensorRepels;
 
   public AnimateMode(MooYoung mooYoung) {
     super(mooYoung);
+
+    ripples = new ArrayList<>();
+    sensorRepels = new ArrayList<>();
+
+    particles = new ParticleSystem(new Bounds(mooYoung.width, mooYoung.height), 500);
+    particles.addBehavior(new FatalBounds());
+    particles.addBehavior(new ParticleFriction(1f));
+    particles.addBehavior(new FlockParticles(1, 1, 1, 50, 200, 80, 0.1f, 2));
+//    particles.addBehavior(new RepelParticles(30, 0.03f));
+
+    repelFixedPoints = new RepelFixedPoints(10, 0.1f);
+    for (RShape shape : mooYoung.getShapes()) {
+      for (int i = 0; i < 100; i++) {
+        RPoint point = shape.getPoint(i / 100f);
+        repelFixedPoints.addFixedPoint(new PVector(point.x - mooYoung.width / 2, point.y - mooYoung.height / 2));
+      }
+    }
+
+    particles.addBehavior(repelFixedPoints);
+//    particles.addBehavior(new AttractParticles(60, 0.001f));
+
+    for (Sensor sensor : mooYoung.getSensors()) {
+      particles.createPointSource(sensor.getPosition().x - mooYoung.width / 2, sensor.getPosition().y - mooYoung.height / 2, 1, 2);
+    }
+
+    particles.fillWithParticles(500, 2);
   }
 
   @Override
   public void draw() {
-    List<Ripple> ripples = mooYoung.getRipples();
+
+    float totalEnergy = 0;
 
     for (Sensor sensor : mooYoung.getSensors()) {
       if (sensor.checkUp()) {
@@ -33,12 +71,16 @@ public class AnimateMode extends Mode {
         ripples.add(ripple);
         Ani.to(ripple, 4f, "radius", mooYoung.width, Ani.QUAD_OUT).getCallbackObject();
       }
+
+      totalEnergy += sensor.getSmoothedValue();
     }
+
+//    repelFixedPoints.setRepelStrength(totalEnergy / 100f);
+
 
     for (int i = ripples.size() - 1; i >= 0; i--) {
       Ripple ripple = ripples.get(i);
       if (ripple.radius >= mooYoung.width) {
-        System.out.println("remove");
         ripples.remove(i);
       }
     }
@@ -91,6 +133,17 @@ public class AnimateMode extends Mode {
       }
       canvas.endShape(PConstants.CLOSE);
     }
+
+    particles.update();
+
+    canvas.pushMatrix();
+    canvas.translate(mooYoung.width / 2, mooYoung.height / 2);
+    canvas.fill(255);
+    canvas.strokeWeight(5);
+    for (Particle p : particles.getParticles()) {
+      canvas.point(p.position.x, p.position.y);
+    }
+    canvas.popMatrix();
 
     canvas.endDraw();
     mooYoung.getCornerPinSurface().render(graphics, canvas, false);
