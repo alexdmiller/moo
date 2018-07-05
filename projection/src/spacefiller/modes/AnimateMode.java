@@ -31,13 +31,14 @@ public class AnimateMode extends Mode {
       if (sensor.checkUp()) {
         Ripple ripple = new Ripple(sensor.getPosition());
         ripples.add(ripple);
-        Ani.to(ripple, 4f, "radius", mooYoung.width, Ani.QUAD_OUT);
+        Ani.to(ripple, 4f, "radius", mooYoung.width, Ani.QUAD_OUT).getCallbackObject();
       }
     }
 
     for (int i = ripples.size() - 1; i >= 0; i--) {
       Ripple ripple = ripples.get(i);
-      if (ripple.radius > mooYoung.width) {
+      if (ripple.radius >= mooYoung.width) {
+        System.out.println("remove");
         ripples.remove(i);
       }
     }
