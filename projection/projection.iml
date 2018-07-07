@@ -17,5 +17,6 @@
     <orderEntry type="library" name="controlP51" level="project" />
     <orderEntry type="library" name="peasy-math" level="project" />
     <orderEntry type="library" name="toxiclibscore" level="project" />
+    <orderEntry type="library" name="mesh" level="project" />
   </component>
 </module>

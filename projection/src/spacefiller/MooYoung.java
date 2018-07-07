@@ -51,7 +51,7 @@ public class MooYoung extends PApplet {
     RShape shape = RG.loadShape(System.getProperty("user.dir") + "/contours.svg");
     shapes = Arrays.asList(shape.children);
     Collections.sort(shapes, new ShapeComparator());
-    shape.scale(0.99f);
+    shape.scale(0.98f);
     shape.translate(-shape.getTopLeft().x, -shape.getTopLeft().y);
     shape.translate(width / 2 - shape.getWidth() / 2, height / 2 - shape.getHeight() / 2);
 
@@ -81,7 +81,6 @@ public class MooYoung extends PApplet {
 
     sensors.get(0).setAssociatedShape(frontPlatform);
     sensors.get(1).setAssociatedShape(backPlatform);
-
 
     Ani.init(this);
 
