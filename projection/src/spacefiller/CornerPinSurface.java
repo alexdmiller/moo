@@ -17,6 +17,7 @@ package spacefiller; /**
 
 import java.awt.Point;
 import java.awt.geom.Point2D;
+import java.io.Serializable;
 
 import javax.media.jai.PerspectiveTransform;
 import javax.media.jai.WarpPerspective;
@@ -32,7 +33,7 @@ import processing.data.XML;
  *
  * March-2013 Added methods to programmatically move the corner points
  */
-public class CornerPinSurface implements Draggable, Transformable {
+public class CornerPinSurface implements Draggable, Transformable, Serializable {
   private MeshPoint[] mesh;
 
   protected float x;
@@ -231,6 +232,27 @@ public class CornerPinSurface implements Draggable, Transformable {
       }
     }
     g.popMatrix();
+  }
+
+  @Override
+  public PVector[] getControlPoints() {
+    PVector[] points = new PVector[4];
+
+    points[0] = new PVector(getCorner(TL).x, getCorner(TL).y);
+    points[1] = new PVector(getCorner(TR).x, getCorner(TR).y);
+    points[2] = new PVector(getCorner(BR).x, getCorner(BR).y);
+    points[3] = new PVector(getCorner(BL).x, getCorner(BL).y);
+
+    return points;
+  }
+
+  @Override
+  public void setControlPoints(PVector[] points) {
+    getCorner(TL).setPosition(points[0].x, points[0].y);
+    getCorner(TR).setPosition(points[1].x, points[1].y);
+    getCorner(BR).setPosition(points[2].x, points[2].y);
+    getCorner(BL).setPosition(points[3].x, points[3].y);
+    calculateMesh();
   }
 
   /**

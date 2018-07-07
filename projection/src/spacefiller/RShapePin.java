@@ -3,7 +3,9 @@ package spacefiller;
 import geomerative.RPoint;
 import processing.core.PVector;
 
-public class RShapePin implements Draggable {
+import java.io.Serializable;
+
+public class RShapePin implements Draggable, Serializable {
   private PVector originalPosition;
   private PVector position;
   private RShapeTransformer parent;
@@ -24,11 +26,19 @@ public class RShapePin implements Draggable {
     this.parent.computeWarp();
   }
 
+  public void setPosition(float x, float y) {
+    this.position.set(x, y);
+  }
+
   public PVector getOriginalPosition() {
     return originalPosition;
   }
 
   public PVector getPosition() {
     return position;
+  }
+
+  public void translatePosition(float x, float y) {
+    this.position.add(x, y);
   }
 }

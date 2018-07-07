@@ -9,14 +9,14 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="core" level="project" />
     <orderEntry type="library" name="jai_core" level="project" />
-    <orderEntry type="library" name="ComputationalGeometry" level="project" />
     <orderEntry type="library" name="spacefillerlib" level="project" />
     <orderEntry type="library" name="jssc" level="project" />
-    <orderEntry type="library" name="batikfont" level="project" />
-    <orderEntry type="library" name="jsyphon" level="project" />
-    <orderEntry type="library" name="apiviz-1.3.1.GA" level="project" />
-    <orderEntry type="library" name="controlP5" level="project" />
     <orderEntry type="library" name="Ani" level="project" />
-    <orderEntry type="library" name="peasycam" level="project" />
+    <orderEntry type="library" name="batikfont1" level="project" />
+    <orderEntry type="library" name="colorutils" level="project" />
+    <orderEntry type="library" name="controlP51" level="project" />
+    <orderEntry type="library" name="peasy-math" level="project" />
+    <orderEntry type="library" name="toxiclibscore" level="project" />
+    <orderEntry type="library" name="mesh" level="project" />
   </component>
 </module>

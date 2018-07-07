@@ -17,14 +17,14 @@ public class ScaleMode extends EditMode {
 
   @Override
   public void drawEditingUI() {
-    PGraphics canvas = mooYoung.getCanvas();
-    Transformable target = mooYoung.getTransformTarget();
-
-    canvas.fill(255);
-    if (target != null) {
-      PVector center = target.getCenter();
-      canvas.ellipse(center.x, center.y, 30, 30);
-    }
+//    PGraphics canvas = mooYoung.getCanvas();
+//    Transformable target = mooYoung.getTransformTarget();
+//
+//    canvas.fill(255);
+//    if (target != null) {
+//      PVector center = target.getCenter();
+//      canvas.ellipse(center.x, center.y, 30, 30);
+//    }
   }
 
   @Override

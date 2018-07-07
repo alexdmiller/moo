@@ -3,6 +3,7 @@ package spacefiller.modes;
 import geomerative.RShape;
 import processing.core.PGraphics;
 import spacefiller.MooYoung;
+import spacefiller.RShapeTransformer;
 import spacefiller.sensor.Sensor;
 
 public class EditMode extends Mode {
@@ -21,7 +22,18 @@ public class EditMode extends Mode {
     canvas.strokeWeight(3);
     canvas.noFill();
 
+    RShape selectedShape = null;
+    if (mooYoung.getTransformTarget() instanceof RShapeTransformer) {
+      RShapeTransformer transformer = (RShapeTransformer) mooYoung.getTransformTarget();
+      selectedShape = transformer.getShape();
+    }
+
     for (RShape shape : mooYoung.getShapes()) {
+      if (selectedShape != null && selectedShape == shape) {
+        canvas.stroke(255, 0, 0);
+      } else {
+        canvas.stroke(255);
+      }
       shape.draw(canvas);
     }
 
