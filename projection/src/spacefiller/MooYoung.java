@@ -2,7 +2,6 @@ package spacefiller;
 
 import de.looksgood.ani.Ani;
 import geomerative.RG;
-import geomerative.RPoint;
 import geomerative.RShape;
 import processing.core.PApplet;
 import processing.core.PGraphics;
