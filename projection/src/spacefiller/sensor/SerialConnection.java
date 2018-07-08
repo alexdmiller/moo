@@ -36,6 +36,7 @@ public class SerialConnection implements Runnable {
           }
         } else {
           int value = port.read();
+//          System.out.println(index + ": " + value);
           sensors.get(index).setSensorValue(value);
           index++;
         }

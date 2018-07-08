@@ -20,6 +20,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class MooYoung extends PApplet {
+  public static final float SHAPE_SCALE = 1.2f;
+
   private Mode currentMode;
   private CornerPinSurface surface;
   private PGraphics canvas;
@@ -50,7 +52,7 @@ public class MooYoung extends PApplet {
     RShape shape = RG.loadShape(System.getProperty("user.dir") + "/contours.svg");
     shapes = Arrays.asList(shape.children);
     Collections.sort(shapes, new ShapeComparator());
-    shape.scale(0.98f);
+    shape.scale(SHAPE_SCALE);
     shape.translate(-shape.getTopLeft().x, -shape.getTopLeft().y);
     shape.translate(width / 2 - shape.getWidth() / 2, height / 2 - shape.getHeight() / 2);
 
@@ -59,17 +61,18 @@ public class MooYoung extends PApplet {
     sensors = new ArrayList<>();
     try {
       println(Arrays.toString(Serial.list()));
-      SerialConnection connection = new SerialConnection(new Serial(this, "/dev/tty.usbmodem1421", 9600), 2);
+      SerialConnection connection = new SerialConnection(new Serial(this, "/dev/cu.usbmodem1421", 9600), 2);
 
-      SerialPressureSensor sensor1 = connection.getSensor(0);
-      SerialPressureSensor sensor2 = connection.getSensor(1);
+      SerialPressureSensor sensor2 = connection.getSensor(0);
+      SerialPressureSensor sensor1 = connection.getSensor(1);
 
-      sensor1.setSensitivity(4f);
-      sensor2.setSensitivity(4f);
+      sensor1.setSensitivity(2f);
+      sensor2.setSensitivity(2f);
 
       sensors.add(sensor1);
       sensors.add(sensor2);
     } catch (RuntimeException e) {
+      e.printStackTrace();
       System.out.println("Can't find serial connection. Resorting to keyboard control.");
       sensors.add(new KeyboardSensor(this, 'm'));
       sensors.add(new KeyboardSensor(this, 'n'));
