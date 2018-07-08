@@ -39,6 +39,7 @@ public class EditMode extends Mode {
 
     canvas.stroke(255);
     for (Sensor sensor : mooYoung.getSensors()) {
+      sensor.recomputePosition();
       if (sensor.isDepressed()) {
         canvas.fill(255, 0, 0);
       } else {

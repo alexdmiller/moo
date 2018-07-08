@@ -8,16 +8,27 @@ import static processing.core.PApplet.println;
 public class KeyboardSensor extends Sensor {
   private PApplet parent;
   private char key;
+  private boolean keyDown;
 
-  public KeyboardSensor(PApplet parent, char key) {
+  public KeyboardSensor(PApplet parent, char key, int historyLength) {
+    super(historyLength);
     this.parent = parent;
     this.key = key;
+    this.parent.registerMethod("draw", this);
     this.parent.registerMethod("keyEvent", this);
+  }
+
+  public void draw() {
+    setSensorState(keyDown);
   }
 
   public void keyEvent(KeyEvent event) {
     if (event.getKey() == key) {
-      setSensorState(event.getAction() == KeyEvent.PRESS || event.getAction() == KeyEvent.TYPE);
+      if (event.getAction() == KeyEvent.PRESS) {
+        keyDown = true;
+      } else if (event.getAction() == KeyEvent.RELEASE) {
+        keyDown = false;
+      }
     }
   }
 }

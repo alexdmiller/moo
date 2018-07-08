@@ -5,7 +5,7 @@ import processing.core.PVector;
 
 import java.io.Serializable;
 
-public class RShapePin implements Draggable, Serializable {
+public class RShapePin implements Pin, Serializable {
   private PVector originalPosition;
   private PVector position;
   private RShapeTransformer parent;

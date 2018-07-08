@@ -5,6 +5,7 @@ import processing.event.KeyEvent;
 import processing.event.MouseEvent;
 import spacefiller.Draggable;
 import spacefiller.MooYoung;
+import spacefiller.Pin;
 import spacefiller.Transformable;
 
 public class WarpMode extends EditMode {
@@ -26,8 +27,9 @@ public class WarpMode extends EditMode {
     switch (e.getAction()) {
       case MouseEvent.PRESS:
         if (forceDrag) {
-          dragged = target.selectClosestPin(mouse);
-          clickedPointDelta = PVector.sub(dragged.getPosition(), mouse);
+          Pin draggedPin = target.selectClosestPin(mouse);
+          dragged = draggedPin;
+          clickedPointDelta = PVector.sub(draggedPin.getPosition(), mouse);
         } else {
           dragged = target.select(mouse);
         }

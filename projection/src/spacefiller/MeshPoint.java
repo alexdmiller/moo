@@ -23,7 +23,7 @@ import java.io.Serializable;
  * Represents a single point in the mesh, along with its precomputed (u,v)
  * texture coordinates.
  */
-public class MeshPoint implements Draggable, Serializable {
+public class MeshPoint implements Pin, Serializable {
 	public float x;
 	public float y;
 	public float u;
@@ -48,8 +48,8 @@ public class MeshPoint implements Draggable, Serializable {
 	}
 
 	public void moveTo(float x, float y) {
-		this.x = x - parent.x;
-		this.y = y - parent.y;
+		this.x = x;
+		this.y = y;
 		//parent.calculateMesh(this.id);
 		parent.calculateMesh();
 	}

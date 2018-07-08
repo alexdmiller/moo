@@ -4,5 +4,4 @@ import processing.core.PVector;
 
 public interface Draggable {
   void moveTo(float x, float y);
-  PVector getPosition();
 }

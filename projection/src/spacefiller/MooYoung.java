@@ -20,7 +20,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class MooYoung extends PApplet {
-  public static final float SHAPE_SCALE = 1.2f;
+  public static final float SHAPE_SCALE = 0.97f;
 
   private Mode currentMode;
   private CornerPinSurface surface;
@@ -61,7 +61,7 @@ public class MooYoung extends PApplet {
     sensors = new ArrayList<>();
     try {
       println(Arrays.toString(Serial.list()));
-      SerialConnection connection = new SerialConnection(new Serial(this, "/dev/cu.usbmodem1421", 9600), 2);
+      SerialConnection connection = new SerialConnection(new Serial(this, "/dev/cu.usbmodem1421", 9600), 2, 20);
 
       SerialPressureSensor sensor2 = connection.getSensor(0);
       SerialPressureSensor sensor1 = connection.getSensor(1);
@@ -74,8 +74,8 @@ public class MooYoung extends PApplet {
     } catch (RuntimeException e) {
       e.printStackTrace();
       System.out.println("Can't find serial connection. Resorting to keyboard control.");
-      sensors.add(new KeyboardSensor(this, 'm'));
-      sensors.add(new KeyboardSensor(this, 'n'));
+      sensors.add(new KeyboardSensor(this, 'm', 20));
+      sensors.add(new KeyboardSensor(this, 'n', 20));
     }
 
     RShape frontPlatform = shapes.get(shapes.size() - 1);
@@ -98,6 +98,8 @@ public class MooYoung extends PApplet {
 
   @Override
   public void mouseReleased() {
+
+
     try {
       FileWriter fileWriter = new FileWriter("warp-points.csv");
       PrintWriter printWriter = new PrintWriter(fileWriter);

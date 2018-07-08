@@ -36,8 +36,6 @@ import processing.data.XML;
 public class CornerPinSurface implements Draggable, Transformable, Serializable {
   private MeshPoint[] mesh;
 
-  protected float x;
-  protected float y;
   private float clickX;
   private float clickY;
 
@@ -152,7 +150,6 @@ public class CornerPinSurface implements Draggable, Transformable, Serializable 
     int h = height;
 
     g.pushMatrix();
-    g.translate(x, y);
     if (showGrid)
       g.stroke(gridColor);
     else
@@ -201,14 +198,12 @@ public class CornerPinSurface implements Draggable, Transformable, Serializable 
    */
 
   public PVector getTransformedCursor(int cx, int cy) {
-    Point2D point = warpPerspective.mapSourcePoint(new Point(cx - (int) x,
-        cy - (int) y));
+    Point2D point = warpPerspective.mapSourcePoint(new Point(cx, cy));
     return new PVector((int) point.getX(), (int) point.getY());
   }
 
   public PVector getTransformedCursor(float cx, float cy) {
-    Point2D point = warpPerspective.mapSourcePoint(new Point((int) cx - (int) x,
-        (int) cy - (int) y));
+    Point2D point = warpPerspective.mapSourcePoint(new Point((int) cx, (int) cy));
     return new PVector((int) point.getX(), (int) point.getY());
   }
 
@@ -222,7 +217,6 @@ public class CornerPinSurface implements Draggable, Transformable, Serializable 
    */
   public void renderControlPoints(PGraphics g, PGraphics canvas) {
     g.pushMatrix();
-    g.translate(x, y);
     g.stroke(controlPointColor);
     g.fill(255);
     for (int i = 0; i < mesh.length; i++) {
@@ -269,15 +263,6 @@ public class CornerPinSurface implements Draggable, Transformable, Serializable 
     controlPointColor = newColor;
   }
 
-  public PVector getPosition() {
-    return new PVector(x, y);
-  }
-
-  public void setPosition(PVector pos) {
-    x = pos.x;
-    y = pos.y;
-  }
-
   public PVector getRelativeCenter() {
     PVector center = new PVector();
     for (MeshPoint point : mesh) {
@@ -291,7 +276,6 @@ public class CornerPinSurface implements Draggable, Transformable, Serializable 
 
   public PVector getCenter() {
     PVector center = getRelativeCenter();
-    center.add(getPosition());
     return center;
   }
 
@@ -305,9 +289,9 @@ public class CornerPinSurface implements Draggable, Transformable, Serializable 
   }
 
   @Override
-  public Draggable selectClosestPin(PVector point) {
-    PVector relative = new PVector(point.x - this.x, point.y - this.y);
-    Draggable closest = null;
+  public Pin selectClosestPin(PVector point) {
+    PVector relative = new PVector(point.x, point.y);
+    Pin closest = null;
 
     for (int i = 0; i < mesh.length; i++) {
       if (mesh[i].isControlPoint()) {
@@ -321,13 +305,10 @@ public class CornerPinSurface implements Draggable, Transformable, Serializable 
   }
 
   public Draggable select(PVector point, boolean controlPoints) {
-    float relativeX = point.x - this.x;
-    float relativeY = point.y - this.y;
-
     if (controlPoints) {
       // first, see if one of the control points are selected
       for (int i = 0; i < mesh.length; i++) {
-        if (PApplet.dist(mesh[i].x, mesh[i].y, relativeX, relativeY) < 30
+        if (PApplet.dist(mesh[i].x, mesh[i].y, point.x, point.y) < 30
             && mesh[i].isControlPoint())
           return mesh[i];
       }
@@ -335,8 +316,8 @@ public class CornerPinSurface implements Draggable, Transformable, Serializable 
 
     // then, see if the surface itself is selected
     if (isPointOver(point)) {
-      clickX = relativeX;
-      clickY = relativeY;
+      clickX = point.x;
+      clickY = point.y;
       return this;
     }
     return null;
@@ -346,9 +327,9 @@ public class CornerPinSurface implements Draggable, Transformable, Serializable 
    * Returns true if the mouse is over this surface, false otherwise.
    */
   public boolean isPointOver(PVector point) {
-    if (isPointInTriangle(point.x - x, point.y - y, mesh[TL],
+    if (isPointInTriangle(point.x, point.y, mesh[TL],
         mesh[TR], mesh[BL])
-        || isPointInTriangle(point.x - x, point.y - y,
+        || isPointInTriangle(point.x, point.y,
         mesh[BL], mesh[TR], mesh[BR]))
       return true;
     return false;
@@ -436,8 +417,13 @@ public class CornerPinSurface implements Draggable, Transformable, Serializable 
    *            mouse was pressed when selecting the surface.
    */
   public void moveTo(float x, float y) {
-    this.x = x - clickX;
-    this.y = y - clickY;
+    for (MeshPoint p : mesh) {
+      p.x += x - clickX;
+      p.y += y - clickY;
+    }
+
+    clickX = x;
+    clickY = y;
   }
 
   public void translate(PVector t) {
@@ -470,52 +456,6 @@ public class CornerPinSurface implements Draggable, Transformable, Serializable 
       p.y = newY;
     }
     translate(origin);
-  }
-
-  /**
-   * @invisible
-   *
-   *            Populates values from an XML object
-   */
-  void load(XML xml) {
-
-    this.x = xml.getFloat("x");
-    this.y = xml.getFloat("y");
-    // reload the mesh points
-    XML[] pointsXML = xml.getChildren("point");
-    for (XML point : pointsXML) {
-      MeshPoint mp = mesh[point.getInt("i")];
-      mp.x = point.getFloat("x");
-      mp.y = point.getFloat("y");
-      mp.u = point.getFloat("u");
-      mp.v = point.getFloat("v");
-      mp.setControlPoint(true);
-    }
-    calculateMesh();
-  }
-
-  XML save() {
-
-    XML parent = new XML("surface");
-
-    parent.setFloat("x", x);
-    parent.setFloat("y", y);
-
-    for (int i = 0; i < mesh.length; i++) {
-      if (mesh[i].isControlPoint()) {
-        // fmt = "point i=\"%d\" x=\"%f\" y=\"%f\" u=\"%f\" v=\"%f\"";
-        // fmted = String.format(fmt, i, s.mesh[i].x, s.mesh[i].y,
-        // s.mesh[i].u, s.mesh[i].v);
-        XML point = new XML("point");
-        point.setFloat("x", mesh[i].x);
-        point.setFloat("y", mesh[i].y);
-        point.setFloat("u", mesh[i].u);
-        point.setFloat("v", mesh[i].v);
-        point.setFloat("i", i);
-        parent.addChild(point);
-      }
-    }
-    return parent;
   }
 
   public boolean isVisible() {

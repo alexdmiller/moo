@@ -27,9 +27,6 @@ public class AnimateMode extends Mode {
   private static final float LINE_PULSE = 20;
   private static final int NUM_PARTICLES = 500;
 
-  private Delaunay delaunay;
-  private Voronoi voronoi;
-
   private List<Ripple> ripples;
   private ParticleSystem particles;
   private RepelFixedPoints repelFixedPoints;
@@ -40,6 +37,8 @@ public class AnimateMode extends Mode {
   private float tangentLineSize;
   private float tangentLineOffset;
   private float tangentLineSpeed;
+
+  private float outlineOpacity = 1;
 
   private AniSequence currentIdleSequence;
 
@@ -80,9 +79,6 @@ public class AnimateMode extends Mode {
       points[i][1] = p.y;
     }
 
-    delaunay = new Delaunay(points);
-    voronoi = new Voronoi(points);
-
     particles.addBehavior(repelFixedPoints);
 
     for (Sensor sensor : mooYoung.getSensors()) {
@@ -96,10 +92,8 @@ public class AnimateMode extends Mode {
   }
 
   private void setupMaskShape() {
-    maskShape = RG.loadShape(System.getProperty("user.dir") + "/contours-inverse.svg");
-    maskShape.scale(MooYoung.SHAPE_SCALE);
-    maskShape.translate(-maskShape.getTopLeft().x, -maskShape.getTopLeft().y);
-    maskShape.translate(mooYoung.width / 2 - maskShape.getWidth() / 2, mooYoung.height / 2 - maskShape.getHeight() / 2);
+    RShape rect = RShape.createRectangle(0, 0, mooYoung.width, mooYoung.height);
+    maskShape = RG.diff(rect, mooYoung.getShapes().get(0));
   }
 
   @Override
@@ -133,37 +127,7 @@ public class AnimateMode extends Mode {
     updateAndDrawParticles(canvas, totalEnergy);
     updateTangentLines();
 
-//
-//    float[][] edges = delaunay.getEdges();
-//    for(int i=0; i<edges.length; i++)
-//    {
-//      float startX = edges[i][0];
-//      float startY = edges[i][1];
-//      float endX = edges[i][2];
-//      float endY = edges[i][3];
-//      canvas.line( startX, startY, endX, endY );
-//    }
-
-//    MPolygon[] myRegions = voronoi.getRegions();
-//    PVector center = new PVector(mooYoung.width / 2, mooYoung.height / 2);
-//    for(int i=0; i<myRegions.length; i++)
-//    {
-//      // an array of points
-//      float[][] regionCoordinates = myRegions[i].getCoords();
-//
-//      PVector p = new PVector(regionCoordinates[0][0], regionCoordinates[0][1]);
-//
-//      float opacity = (float) Math.sin(center.dist(p) / 500f - mooYoung.frameCount / 40f) * 255;
-//
-//      canvas.strokeWeight(5);
-//      canvas.stroke(255, opacity);
-//      canvas.fill(255, 0, 255, opacity);
-//      canvas.noFill();
-//      myRegions[i].draw(canvas); // draw this shape
-//    }
-
     drawMask(canvas);
-
 
     canvas.endDraw();
     mooYoung.getCornerPinSurface().render(graphics, canvas, false);
@@ -172,7 +136,9 @@ public class AnimateMode extends Mode {
   }
 
   private void onSensorDown(Sensor sensor) {
-    startTangentLineAnimation();
+    if (bothSensorsDown()) {
+      startTangentLineAnimation();
+    }
   }
 
   private void onSensorUp(Sensor sensor) {
@@ -194,31 +160,19 @@ public class AnimateMode extends Mode {
     canvas.ortho();
     canvas.pushMatrix();
     canvas.translate(0, 0, 2);
-    canvas.fill(0);
+    canvas.fill(0, 0, 0);
     canvas.noStroke();
     maskShape.draw(canvas);
-    canvas.popMatrix();
-
-    canvas.pushMatrix();
-    canvas.translate(0, 0, 2);
-    canvas.stroke(0 );
-    canvas.strokeWeight(40);
-    canvas.noFill();
-    canvas.rect(
-        mooYoung.width / 2 - maskShape.getWidth() / 2 - 18,
-        mooYoung.height / 2 - maskShape.getHeight() / 2 - 18,
-        maskShape.getWidth() + 30,
-        maskShape.getHeight() + 35);
     canvas.popMatrix();
   }
 
   private void updateFlock(float totalEnergy) {
     flockParticles.setDesiredSeparation(totalEnergy * 20 + 20);
-    flockParticles.separationWeight = totalEnergy * 4 + 1;
+    flockParticles.separationWeight = totalEnergy * 4 + 2;
     flockParticles.setCohesionThreshold(totalEnergy * 20 + 40);
     flockParticles.setCohesionWeight(totalEnergy * 5 + 1);
     flockParticles.setMaxSpeed(totalEnergy * 5 + 1);
-    flockParticles.setAlignmentThreshold(totalEnergy * 100 + 30);
+    flockParticles.setAlignmentThreshold(totalEnergy * 100 + 50);
   }
 
   private void purgeRipples() {
@@ -367,34 +321,27 @@ public class AnimateMode extends Mode {
     }
   }
 
-  private void transitionOutIdleSequence() {
-
-  }
-
-  private void chooseRandomIdleSequence() {
-
-  }
-
-  private void startTangentLineAnimation () {
+  private void startTangentLineAnimation() {
     AniSequence seq = new AniSequence(mooYoung);
 
     seq.beginSequence();
 
-    seq.add(Ani.to(this, 1f, "tangentLineSize", 10, Ani.SINE_OUT));
-    seq.add(Ani.to(this, 1f, "tangentLineSpeed", 0.03f, Ani.EXPO_IN));
+    seq.add(Ani.to(this, 0.5f, "tangentLineSize", 15, Ani.SINE_OUT));
 
     seq.beginStep();
-    seq.add(Ani.to(this, 2f, 6f, "tangentLineSize", 0f, Ani.SINE_IN));
-    seq.add(Ani.to(this, 2f, 5f, "tangentLineSpeed", 0f, Ani.SINE_IN, "onEnd:chooseRandomIdleSequence"));
+    seq.add(Ani.to(this, 0.5f, "tangentLineSize", 15, Ani.SINE_OUT));
+    seq.add(Ani.to(this, 0.2f, "tangentLineSpeed", 0.1f, Ani.EXPO_IN));
+    seq.endStep();
+
+    seq.beginStep();
+    seq.add(Ani.to(this, 1f, 0, "tangentLineSize", 0f, Ani.EXPO_IN));
+    seq.add(Ani.to(this, 1f, 0, "tangentLineSpeed", 0f, Ani.EXPO_IN));
     seq.endStep();
 
     seq.endSequence();
     seq.start();
 
+
     currentIdleSequence = seq;
-  }
-
-  private void startVoronoiAnimation() {
-
   }
 }

@@ -9,12 +9,12 @@ public class SerialConnection implements Runnable {
   private Serial port;
   private List<SerialPressureSensor> sensors;
 
-  public SerialConnection(Serial port, int numSensors) {
+  public SerialConnection(Serial port, int numSensors, int historyLength) {
     this.port = port;
     this.sensors = new ArrayList<>(numSensors);
 
     for (int i = 0; i < numSensors; i++) {
-      this.sensors.add(new SerialPressureSensor());
+      this.sensors.add(new SerialPressureSensor(historyLength));
     }
 
     (new Thread(this)).start();

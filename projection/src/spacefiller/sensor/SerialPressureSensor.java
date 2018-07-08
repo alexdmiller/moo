@@ -8,6 +8,10 @@ import java.util.Arrays;
 public class SerialPressureSensor extends Sensor {
   private float sensitivity = 5;
 
+  public SerialPressureSensor(int historyLength) {
+    super(historyLength);
+  }
+
   public float getSensitivity() {
     return sensitivity;
   }

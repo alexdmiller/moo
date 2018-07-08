@@ -7,7 +7,7 @@ public interface Transformable {
   void scale(float scale);
   void rotate(float theta);
   Draggable select(PVector point);
-  Draggable selectClosestPin(PVector point);
+  Pin selectClosestPin(PVector point);
   PVector getCenter();
   PVector getRelativePoint(PVector point);
   void renderControlPoints(PGraphics graphics, PGraphics canvas);

@@ -91,8 +91,8 @@ public class RShapeTransformer implements Draggable, Transformable {
   }
 
   @Override
-  public Draggable selectClosestPin(PVector point) {
-    Draggable closest = null;
+  public Pin selectClosestPin(PVector point) {
+    Pin closest = null;
 
     for (RShapePin pin : pins) {
       if (closest == null || pin.getPosition().dist(point) < closest.getPosition().dist(point)) {
@@ -181,11 +181,6 @@ public class RShapeTransformer implements Draggable, Transformable {
 
     lastX = x;
     lastY = y;
-  }
-
-  @Override
-  public PVector getPosition() {
-    return new PVector(shape.getX(), shape.getY());
   }
 
   public RShape getShape() {
