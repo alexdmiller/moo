@@ -15,6 +15,8 @@ package spacefiller; /**
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import processing.core.PVector;
+
 import java.io.Serializable;
 
 /**
@@ -50,6 +52,11 @@ public class MeshPoint implements Draggable, Serializable {
 		this.y = y - parent.y;
 		//parent.calculateMesh(this.id);
 		parent.calculateMesh();
+	}
+
+	@Override
+	public PVector getPosition() {
+		return new PVector(x, y);
 	}
 
 	public void setPosition(float x, float y) {

@@ -1,17 +1,14 @@
 package spacefiller.modes;
 
-import com.sun.org.omg.CORBA.RepositoryIdSeqHelper;
 import de.looksgood.ani.Ani;
 import de.looksgood.ani.AniSequence;
 import geomerative.RG;
 import geomerative.RPoint;
 import geomerative.RShape;
 import megamu.mesh.Delaunay;
-import megamu.mesh.MPolygon;
 import megamu.mesh.Voronoi;
 import processing.core.PConstants;
 import processing.core.PGraphics;
-import processing.core.PImage;
 import processing.core.PVector;
 import spacefiller.*;
 import spacefiller.particles.Bounds;

@@ -304,6 +304,22 @@ public class CornerPinSurface implements Draggable, Transformable, Serializable 
     return select(point, true);
   }
 
+  @Override
+  public Draggable selectClosestPin(PVector point) {
+    PVector relative = new PVector(point.x - this.x, point.y - this.y);
+    Draggable closest = null;
+
+    for (int i = 0; i < mesh.length; i++) {
+      if (mesh[i].isControlPoint()) {
+        if (closest == null || mesh[i].getPosition().dist(relative) < closest.getPosition().dist(relative)) {
+          closest = mesh[i];
+        }
+      }
+    }
+
+    return closest;
+  }
+
   public Draggable select(PVector point, boolean controlPoints) {
     float relativeX = point.x - this.x;
     float relativeY = point.y - this.y;
