@@ -72,8 +72,6 @@ public abstract class Sensor {
   }
 
   protected void setSensorState(boolean down) {
-    System.out.println(down);
-
     lastValues.add(down);
 
     if (lastValues.size() > historySize) {

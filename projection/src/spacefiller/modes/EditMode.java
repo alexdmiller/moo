@@ -9,6 +9,8 @@ import spacefiller.sensor.Sensor;
 public class EditMode extends Mode {
   public EditMode(MooYoung mooYoung) {
     super(mooYoung);
+
+    mooYoung.cursor();
   }
 
   @Override

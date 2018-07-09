@@ -89,6 +89,8 @@ public class AnimateMode extends Mode {
 
     particles.fillWithParticles(NUM_PARTICLES, 2);
     particles.createAreaSource(1, 2);
+
+    mooYoung.noCursor();
   }
 
   private void setupMaskShape() {
@@ -132,7 +134,7 @@ public class AnimateMode extends Mode {
     canvas.endDraw();
     mooYoung.getCornerPinSurface().render(graphics, canvas, false);
 
-    graphics.text(mooYoung.frameRate, 20, 20);
+//    graphics.text(mooYoung.frameRate, 20, 20);
   }
 
   private void onSensorDown(Sensor sensor) {

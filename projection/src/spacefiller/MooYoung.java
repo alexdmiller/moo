@@ -61,7 +61,7 @@ public class MooYoung extends PApplet {
     sensors = new ArrayList<>();
     try {
       println(Arrays.toString(Serial.list()));
-      SerialConnection connection = new SerialConnection(new Serial(this, "/dev/cu.usbmodem1421", 9600), 2, 20);
+      SerialConnection connection = new SerialConnection(new Serial(this, "/dev/ttyACM0", 9600), 2, 20);
 
       SerialPressureSensor sensor2 = connection.getSensor(0);
       SerialPressureSensor sensor1 = connection.getSensor(1);
@@ -86,20 +86,18 @@ public class MooYoung extends PApplet {
 
     Ani.init(this);
 
-    currentMode = new WarpMode(this);
-
     try {
       load();
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     }
 
+    currentMode = new AnimateMode(this);
+
   }
 
   @Override
   public void mouseReleased() {
-
-
     try {
       FileWriter fileWriter = new FileWriter("warp-points.csv");
       PrintWriter printWriter = new PrintWriter(fileWriter);
