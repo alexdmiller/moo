@@ -62,7 +62,7 @@ public class MooYoung extends PApplet {
     try {
       println(Arrays.toString(Serial.list()));
 //      SerialConnection connection = new SerialConnection(new Serial(this, "/dev/ttyACM0", 9600), 2, 20);
-      SerialConnection connection = new SerialConnection(new Serial(this, "/dev/cu.usbmodem14241", 9600), 2, 5);
+      SerialConnection connection = new SerialConnection(new Serial(this, "/dev/ttyACM0", 9600), 2, 5);
 
       SerialPressureSensor sensor1 = connection.getSensor(0);
       SerialPressureSensor sensor2 = connection.getSensor(1);
