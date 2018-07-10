@@ -38,11 +38,14 @@ public class AnimateMode extends Mode {
   private float tangentLineOffset;
   private float tangentLineSpeed;
 
-  private float outlineOpacity = 1;
 
   private AniSequence currentIdleSequence;
 
   private RShape maskShape;
+
+  private float fillOpacity = 0;
+  private float fillShift = 0;
+  private float fillSpeed = 0;
 
   public AnimateMode(MooYoung mooYoung) {
     super(mooYoung);
@@ -123,6 +126,7 @@ public class AnimateMode extends Mode {
 
     canvas.beginDraw();
 
+    drawFills();
     updateFlock(totalEnergy);
     purgeRipples();
     drawContours(canvas);
@@ -135,6 +139,10 @@ public class AnimateMode extends Mode {
     mooYoung.getCornerPinSurface().render(graphics, canvas, false);
 
 //    graphics.text(mooYoung.frameRate, 20, 20);
+  }
+
+  private void drawFills() {
+
   }
 
   private void onSensorDown(Sensor sensor) {
@@ -247,6 +255,8 @@ public class AnimateMode extends Mode {
   }
 
   private void drawContours(PGraphics canvas) {
+    fillShift += fillSpeed;
+
     canvas.clear();
     canvas.stroke(255);
     canvas.noFill();
@@ -289,6 +299,9 @@ public class AnimateMode extends Mode {
         canvas.strokeWeight((float) ((Math.sin(i / 2f + -mooYoung.frameCount / 10f) + 1) / 2 * energy * LINE_PULSE + 2));
         canvas.vertex(p.x + totalDisplacement.x, p.y + totalDisplacement.y);
       }
+
+      canvas.fill((float) Math.sin(i - fillShift) * fillOpacity * 255);
+
       canvas.endShape(PConstants.CLOSE);
     }
   }
@@ -338,6 +351,16 @@ public class AnimateMode extends Mode {
     seq.beginStep();
     seq.add(Ani.to(this, 1f, 0, "tangentLineSize", 0f, Ani.EXPO_IN));
     seq.add(Ani.to(this, 1f, 0, "tangentLineSpeed", 0f, Ani.EXPO_IN));
+    seq.endStep();
+
+    seq.beginStep();
+    seq.add(Ani.to(this, 2f, "fillOpacity", 1, Ani.LINEAR));
+    seq.add(Ani.to(this, 2f, "fillSpeed", 0.5f, Ani.LINEAR));
+    seq.endStep();
+
+    seq.beginStep();
+    seq.add(Ani.to(this, 2f, "fillOpacity", 0, Ani.LINEAR));
+    seq.add(Ani.to(this, 2f, "fillSpeed", 0, Ani.LINEAR));
     seq.endStep();
 
     seq.endSequence();

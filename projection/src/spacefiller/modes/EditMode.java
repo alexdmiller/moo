@@ -5,6 +5,7 @@ import processing.core.PGraphics;
 import spacefiller.MooYoung;
 import spacefiller.RShapeTransformer;
 import spacefiller.sensor.Sensor;
+import spacefiller.sensor.SerialPressureSensor;
 
 public class EditMode extends Mode {
   public EditMode(MooYoung mooYoung) {
@@ -41,13 +42,34 @@ public class EditMode extends Mode {
 
     canvas.stroke(255);
     for (Sensor sensor : mooYoung.getSensors()) {
+      canvas.pushMatrix();
+      canvas.stroke(255);
+      canvas.strokeWeight(1);
       sensor.recomputePosition();
+
       if (sensor.isDepressed()) {
         canvas.fill(255, 0, 0);
       } else {
         canvas.fill(0);
       }
-      canvas.ellipse(sensor.getPosition().x, sensor.getPosition().y, 50, 50);
+      canvas.translate(sensor.getPosition().x, sensor.getPosition().y);
+      canvas.ellipse(0, 0, 50, 50);
+
+      if (sensor instanceof SerialPressureSensor) {
+        SerialPressureSensor serialSensor = (SerialPressureSensor) sensor;
+        canvas.noFill();
+        canvas.stroke(1);
+        canvas.strokeWeight(1);
+        canvas.rect(0, 50, 100, 20);
+
+        canvas.fill(255);
+        canvas.rect(0, 50, serialSensor.getValue() / 10f * 100, 20);
+
+        canvas.textSize(30);
+        canvas.text(serialSensor.getValue(), -15,  15);
+      }
+
+      canvas.popMatrix();
     }
 
     drawEditingUI();

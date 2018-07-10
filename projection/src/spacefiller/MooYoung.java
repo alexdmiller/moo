@@ -61,13 +61,17 @@ public class MooYoung extends PApplet {
     sensors = new ArrayList<>();
     try {
       println(Arrays.toString(Serial.list()));
-      SerialConnection connection = new SerialConnection(new Serial(this, "/dev/ttyACM0", 9600), 2, 20);
+//      SerialConnection connection = new SerialConnection(new Serial(this, "/dev/ttyACM0", 9600), 2, 20);
+      SerialConnection connection = new SerialConnection(new Serial(this, "/dev/cu.usbmodem14241", 9600), 2, 5);
 
-      SerialPressureSensor sensor2 = connection.getSensor(0);
-      SerialPressureSensor sensor1 = connection.getSensor(1);
+      SerialPressureSensor sensor1 = connection.getSensor(0);
+      SerialPressureSensor sensor2 = connection.getSensor(1);
 
-      sensor1.setSensitivity(2f);
-      sensor2.setSensitivity(2f);
+      // Back
+      sensor1.setSensitivity(4f);
+
+      // Front
+      sensor2.setSensitivity(4f);
 
       sensors.add(sensor1);
       sensors.add(sensor2);
@@ -81,8 +85,8 @@ public class MooYoung extends PApplet {
     RShape frontPlatform = shapes.get(shapes.size() - 1);
     RShape backPlatform = shapes.get(shapes.size() - 2);
 
-    sensors.get(0).setAssociatedShape(frontPlatform);
-    sensors.get(1).setAssociatedShape(backPlatform);
+    sensors.get(0).setAssociatedShape(backPlatform);
+    sensors.get(1).setAssociatedShape(frontPlatform);
 
     Ani.init(this);
 
