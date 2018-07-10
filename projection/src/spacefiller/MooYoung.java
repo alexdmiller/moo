@@ -97,7 +97,6 @@ public class MooYoung extends PApplet {
     }
 
     currentMode = new AnimateMode(this);
-
   }
 
   @Override

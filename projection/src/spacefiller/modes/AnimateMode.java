@@ -85,6 +85,7 @@ public class AnimateMode extends Mode {
     particles.addBehavior(repelFixedPoints);
 
     for (Sensor sensor : mooYoung.getSensors()) {
+      sensor.recomputePosition();
       BlackHole hole = new BlackHole(sensor.getPosition().x - mooYoung.width / 2, sensor.getPosition().y - mooYoung.height / 2);
       blackHoles.add(hole);
       particles.addBehavior(hole);
